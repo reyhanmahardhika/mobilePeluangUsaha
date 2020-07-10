@@ -1,9 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
+    tools:context=".MapsActivity"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity" />
+    android:layout_width="match_parent">
+
+    <fragment android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+
+        android:layout_marginBottom="55dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        >
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:inputType="number"
+            android:textSize="17sp"
+            android:hint="Modal yang Anda miliki (Rp)" />
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_cari"
+            android:layout_width="80dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:text="Cari" />
+        </LinearLayout>
+
+</RelativeLayout>

@@ -45,7 +45,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         var markerAwal=0
         val medan = LatLng( 3.597031, 98.678513)
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(medan,16F))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(medan,13F))
 
         mMap.setOnMapClickListener(GoogleMap.OnMapClickListener { LatLng ->
             val position = LatLng
@@ -63,13 +63,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun addMarker(latLng: LatLng){
         val marker= mMap.addMarker(MarkerOptions()
                 .position(latLng).draggable(true).title(getAddress(latLng)))
+        marker.showInfoWindow()
         val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(500.0))
+
     }
 
     private fun getAddress(latLng: LatLng): String {
         val geocoder = Geocoder(this)
         val list = geocoder.getFromLocation(latLng.latitude,latLng.longitude, 1)
-        val tmpKelurahan= list[0].getAddressLine(0)
+        val tmpKelurahan= list[0].subLocality
         return tmpKelurahan
     }
 
