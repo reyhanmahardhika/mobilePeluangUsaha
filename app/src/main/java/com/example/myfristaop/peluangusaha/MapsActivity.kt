@@ -1,5 +1,17 @@
 package com.example.myfristaop.peluangusaha
 
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.compat.Place;
+import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment;
+import com.google.android.libraries.places.compat.ui.PlaceSelectionListener;
+import com.example.myfristaop.peluangusaha.GetNearbyPlacesData;
+
 import android.graphics.Camera
 import android.location.Geocoder
 import android.os.Bundle
@@ -16,23 +28,27 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_maps.*
+import com.google.android.gms.maps.MapFragment
+import kotlinx.android.synthetic.main.testing.*
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+    private var mapFragment : MapFragment=MapFragment()
     var kelurahan=""
+    var position : LatLng = LatLng(0.0,0.0)
 
+    private val PROXIMITY_RADIUS_METERS = 500
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
+        setContentView(R.layout.testing)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
 
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment = getFragmentManager().findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
 
         val toolbar = findViewById <Toolbar> (R.id.app_toolbar)
@@ -41,6 +57,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
 
         toolbar.setNavigationOnClickListener { Toast.makeText(applicationContext,"Navigation icon was clicked",Toast.LENGTH_SHORT).show() }
+
+
     }
 
     /**
@@ -56,12 +74,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         var markerAwal=0
         val medan = LatLng( 3.597031, 98.678513)
+        setupAutoCompleteFragment()
 
         val cu = CameraUpdateFactory.newLatLngZoom(medan,13F)
         mMap.animateCamera(cu)
 
         mMap.setOnMapClickListener(GoogleMap.OnMapClickListener { LatLng ->
-            val position = LatLng
+            position = LatLng
 
             if(markerAwal==0){
                 addMarker(position)
@@ -81,6 +100,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
+
+    private fun setupAutoCompleteFragment() {
+        val autocompleteFragment =
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment) as PlaceAutocompleteFragment
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(p0: Place?) {
+                val url:String = getUrl(position, "")
+                val DataTransfer = arrayOfNulls<Any>(2)
+                DataTransfer[0] = mMap
+                DataTransfer[1] = url
+                Log.d("onClick", url)
+                val getNearbyPlacesData = GetNearbyPlacesData()
+                getNearbyPlacesData.execute(*DataTransfer)
+            }
+
+            override fun onError(status: Status) {
+                Log.e("Error", status.getStatusMessage())
+            }
+        })
+    }
+
+    private fun getUrl(latLng: LatLng,string: String) :String{
+        var googlePlacesUrl = ("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latLng.latitude + "," + latLng.longitude+"&radius=500&name=" + string+"&sensor=true&key=" + getString(R.string.google_maps_key))
+        Log.d("getUrl", googlePlacesUrl)
+        return (googlePlacesUrl)
+    }
+
     private fun addMarker(latLng: LatLng) {
         val marker = mMap.addMarker(MarkerOptions()
                 .position(latLng).draggable(true).title(getAddress(latLng)))
@@ -93,7 +139,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val list = geocoder.getFromLocation(latLng.latitude,latLng.longitude, 1)
         kelurahan= list[0].subLocality
 
-        txt_cari.setText(list[0].getAddressLine(0).toString())
+
+        //txt_cari.setText(list[0].getAddressLine(0).toString())
         return kelurahan
     }
 
