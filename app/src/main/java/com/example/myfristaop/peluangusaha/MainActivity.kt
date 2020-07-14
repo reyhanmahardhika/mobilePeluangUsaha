@@ -2,11 +2,16 @@ package com.example.myfristaop.peluangusaha
 
 import android.location.Geocoder
 import android.os.Bundle
+import android.support.design.widget.Snackbar
+import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -20,9 +25,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.compat.Place
 import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment
 import com.google.android.libraries.places.compat.ui.PlaceSelectionListener
+import kotlinx.android.synthetic.main.activity_navigation.*
+import kotlinx.android.synthetic.main.app_bar_navigation.*
 
+import kotlinx.android.synthetic.main.activity_map.*
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private lateinit var nav: ActionBarDrawerToggle
     private lateinit var mMap: GoogleMap
@@ -33,8 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_map)
-
+        setContentView(R.layout.activity_navigation)
 
         mapFragment = getFragmentManager().findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
@@ -44,10 +51,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_name)
         getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
 
-
-        toolbar.setNavigationOnClickListener {
-
+        fab_myLocation.setOnClickListener { view ->
+            Snackbar.make(view, "Fitur ini sedang dalam tahap pengerjaan", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show()
         }
+
+        val toggle = ActionBarDrawerToggle(
+                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        nav_view.setNavigationItemSelectedListener(this)
 
     }
 
@@ -107,21 +121,58 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addMarker(latLng: LatLng, txt_alamat: PlaceAutocompleteFragment) {
-        val marker = mMap.addMarker(MarkerOptions()
-                .position(latLng).draggable(true).title(getAddress(latLng, txt_alamat)))
-        marker.showInfoWindow()
-        marker.isDraggable = false
-        val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(500.0))
+        try {
+            val marker = mMap.addMarker(MarkerOptions()
+                    .position(latLng).draggable(true).title(getAddress(latLng, txt_alamat)))
+            marker.showInfoWindow()
+            marker.isDraggable = false
+            val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(500.0))
+        } catch (e: Exception) {
+            Toast.makeText(applicationContext, "Periksa koneksi jaringan Anda dan coba kembali!", Toast.LENGTH_SHORT).show()
+        }
 
     }
 
     private fun getAddress(latLng: LatLng, txt_alamat: PlaceAutocompleteFragment): String {
-        val geocoder = Geocoder(this)
-        val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-        val alamat = list[0].getAddressLine(0)
-        kelurahan = list[0].subLocality
-        txt_alamat.setText(alamat)
+        var alamat =""
+        try{
+            val geocoder = Geocoder(this)
+            val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+            alamat = list[0].getAddressLine(0)
+            kelurahan = list[0].subLocality
+            txt_alamat.setText(alamat)
+
+        } catch (e: Exception) {
+            Toast.makeText(applicationContext, "Periksa koneksi jaringan Anda dan coba kembali!", Toast.LENGTH_SHORT).show()
+        }
         return alamat
     }
 
+    /*-------------------- dari sini ke bawah adalah untuk menu navigation -------------------------*/
+
+    override fun onBackPressed() {
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Handle navigation view item clicks here.
+        when (item.itemId) {
+            R.id.edit_profile -> {
+                // Handle the camera action
+            }
+            R.id.usaha_tersimpan -> {
+
+            }
+            R.id.logout -> {
+
+            }
+        }
+
+        drawer_layout.closeDrawer(GravityCompat.START)
+        return true
+    }
 }
