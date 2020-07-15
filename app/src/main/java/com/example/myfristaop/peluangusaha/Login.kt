@@ -21,9 +21,13 @@ class Login : AppCompatActivity(){
     val passwordLogin = findViewById<EditText>(R.id.passwordLogin)
     val btn_login = findViewById<Button>(R.id.btn_login);
     val mendaftar = findViewById<TextView>(R.id.mendaftar)
+
     btn_login?.setOnClickListener{
-      if(emailLogin.text.toString().isEmailValid() && passwordLogin.text.toString().isPasswordValid())
+      if(emailLogin.text.toString().isEmailValid() && passwordLogin.text.toString().isPasswordValid()){
         Toast.makeText(this, "Valid", Toast.LENGTH_SHORT).show()
+        intent = Intent(this,MainActivity::class.java)
+        startActivity(intent)
+      }
       else
         Toast.makeText(this, "Invalid", Toast.LENGTH_SHORT).show()
     }
