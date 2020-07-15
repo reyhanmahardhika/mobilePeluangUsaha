@@ -9,6 +9,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -30,20 +31,20 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".MainActivity"
-            android:label="Peluang Usaha">
+            android:label="Peluang Usaha"
+            android:logo="@drawable/ic_peluang_usaha"
+            android:icon="@drawable/ic_peluang_usaha"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Login" />
+        <activity android:name=".Register"/>
+
     </application>
 
 </manifest>

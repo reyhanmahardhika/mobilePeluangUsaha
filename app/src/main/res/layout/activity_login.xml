@@ -1,88 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tool="http://schemas.android.com/tools"
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/quantum_lightblue"
+  android:background="@color/ThemeApk"
   tool:context=".Login">
 
-  <LinearLayout
-    android:id="@+id/loginForm"
-    android:layout_width="283dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="200dp"
-    android:background="@drawable/border"
-    android:orientation="vertical"
-    android:layout_gravity="center"
-    android:paddingBottom="40dp">
-
-    <TextView
-      android:id="@+id/header_login"
+  <ImageView
+      android:layout_width="129dp"
+      android:layout_height="145dp"
+      android:layout_alignParentTop="true"
+      android:layout_centerHorizontal="true"
+      android:layout_marginTop="39dp"
+      android:src="@drawable/ic_peluang_usaha" />
+  <android.support.v7.widget.CardView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:layout_marginTop="10dp"
-      android:text="Masuk"
-      android:textSize="40dp" />
-
-    <EditText
-      android:id="@+id/emailLogin"
-      android:layout_width="match_parent"
-      android:layout_height="50dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginTop="20dp"
-      android:layout_marginRight="20dp"
-      android:background="@drawable/border"
-      android:hint="Email"
-      android:paddingLeft="10dp"
-      android:inputType="textEmailAddress"/>
-
-    <EditText
-      android:id="@+id/passwordLogin"
-      android:layout_width="match_parent"
-      android:layout_height="50dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginTop="20dp"
-      android:layout_marginRight="20dp"
-      android:background="@drawable/border"
-      android:hint="Password"
-      android:paddingLeft="10dp"
-      android:inputType="textPassword"/>
-
-    <Button
-      android:id="@+id/btn_login"
-      android:layout_width="match_parent"
-      android:layout_height="50dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginTop="20dp"
-      android:layout_marginRight="20dp"
-      android:background="#007BFF"
-      android:text="Masuk"
-      android:textColor="#FFFFFF"
-      android:textSize="20dp" />
+      android:layout_centerHorizontal="true"
+      android:layout_marginTop="200dp">
     <LinearLayout
-      android:layout_width="match_parent"
+      android:id="@+id/loginForm"
+      android:layout_width="283dp"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="20dp">
-      <TextView
-        android:id="@+id/mendaftar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Mendaftar"
-        android:textSize="15dp"
-        android:textColor="@color/quantum_lightblue"/>
-      <TextView
-        android:id="@+id/lupaPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lupa Password? "
-        android:textSize="15dp"
-        android:textColor="@color/quantum_lightblue"/>
-    </LinearLayout>
+      android:background="@drawable/border"
+      android:orientation="vertical"
+      android:paddingBottom="40dp">
 
+      <TextView
+        android:id="@+id/header_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="Masuk"
+        android:textSize="40dp" />
+
+      <EditText
+        android:id="@+id/emailLogin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/border"
+        android:hint="Email"
+        android:paddingStart="10dp"
+        android:inputType="textEmailAddress"/>
+
+      <EditText
+        android:id="@+id/passwordLogin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/border"
+        android:hint="Password"
+        android:paddingStart="10dp"
+        android:inputType="textPassword"/>
+
+      <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:background="#007BFF"
+        android:text="Masuk"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"
+          android:onClick="btn_login"/>
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+        <TextView
+          android:id="@+id/mendaftar"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="Mendaftar"
+          android:textSize="15sp"
+          android:textColor="@color/quantum_lightblue"/>
+        <TextView
+          android:id="@+id/lupaPassword"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Lupa Password? "
+          android:textSize="15dp"
+          android:textColor="@color/quantum_lightblue"/>
+      </LinearLayout>
   </LinearLayout>
-</LinearLayout>
+  </android.support.v7.widget.CardView>
+</RelativeLayout>

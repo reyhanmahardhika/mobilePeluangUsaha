@@ -2,5 +2,6 @@
 <resources>
     <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#FFF</color>
+    <color name="ThemeApk">#00c4cc</color>
 </resources>
