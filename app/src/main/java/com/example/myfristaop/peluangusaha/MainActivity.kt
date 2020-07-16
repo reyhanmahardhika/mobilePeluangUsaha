@@ -1,6 +1,7 @@
 package com.example.myfristaop.peluangusaha
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.TintAwareDrawable
 import android.support.v4.view.GravityCompat
@@ -46,7 +48,6 @@ import java.io.InputStreamReader
 import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.jar.Manifest
 
 open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
@@ -221,7 +222,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
 
     }
-    
+
     //digunakan untuk membuat marker
     private fun addMarker(latLng: LatLng, txt_alamat: PlaceAutocompleteFragment) {
         try {
@@ -272,7 +273,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.edit_profile -> {
-                // Handle the camera action
+              startActivity(Intent(this, Profile::class.java))
             }
             R.id.usaha_tersimpan -> {
 
