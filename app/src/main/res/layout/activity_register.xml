@@ -6,7 +6,7 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@color/quantum_lightblue"
-  tool:context=".Register">
+  tool:context=".RegisterActivity">
 
   <LinearLayout
     android:id="@+id/registerForm"
@@ -27,14 +27,14 @@
       android:textSize="40dp" />
 
     <EditText
-      android:id="@+id/usernameRegister"
+      android:id="@+id/userNameRegister"
       android:layout_width="match_parent"
       android:layout_height="50dp"
       android:layout_marginLeft="20dp"
       android:layout_marginTop="20dp"
       android:layout_marginRight="20dp"
       android:background="@drawable/border"
-      android:hint="Username"
+      android:hint="Nama Pengguna"
       android:paddingLeft="10dp"
       android:inputType="textEmailAddress"/>
 

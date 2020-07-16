@@ -1,6 +1,7 @@
 package com.example.myfristaop.peluangusaha
 
-import android.annotation.SuppressLint
+
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
@@ -10,7 +11,7 @@ import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.TintAwareDrawable
+
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -18,7 +19,11 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
-import com.example.myfristaop.peluangusaha.R.id.map
+import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
+import com.example.myfristaop.peluangusaha.model.UsahaResponse
+import com.example.myfristaop.peluangusaha.model.Wilayah
+import com.example.myfristaop.peluangusaha.preferences.UserPreferences
+
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -30,7 +35,7 @@ import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.OnSuccessListener
+
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.compat.Place
 import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment
@@ -39,6 +44,12 @@ import kotlinx.android.synthetic.main.activity_navigation.*
 import kotlinx.android.synthetic.main.app_bar_navigation.*
 
 import kotlinx.android.synthetic.main.activity_map.*
+import org.jetbrains.anko.doAsync
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -46,7 +57,7 @@ import java.io.InputStreamReader
 import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.jar.Manifest
+
 
 open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
@@ -59,14 +70,37 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private var position: LatLng = LatLng(0.0, 0.0)
     lateinit var user : FusedLocationProviderClient
 
+    private lateinit var userPreferences : UserPreferences
+    private val prefFileName = "DATAUSER"
+
+    lateinit var retrofit: Retrofit
+    lateinit var peluangUsahaApi: PeluangUsahaApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
 
+        // Sebelum lanjut cek apakah user sudah login
+
+        userPreferences = UserPreferences(this, prefFileName)
+        checkLogin()
+
+        retrofit = Retrofit.Builder()
+                .baseUrl(BuildConfig.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+        peluangUsahaApi = retrofit.create(PeluangUsahaApi::class.java)
+
+        // Mengambil kepadatan penduduk berdasarkan kecamatan
+        // ambilKepadatanPenduduk("Binjai")
+
+        // Mengambil semua usaha
+        ambilSemuaUsaha()
+
+
+
         if(position== LatLng(0.0, 0.0)){ btn_cari.isEnabled=false}
         //inisialisasi text autocomplate alamat
-        txt_alamat =
-                fragmentManager.findFragmentById(R.id.place_autocomplete_fragment) as PlaceAutocompleteFragment
+        txt_alamat = fragmentManager.findFragmentById(R.id.place_autocomplete_fragment) as PlaceAutocompleteFragment
 
         mapFragment = fragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
@@ -272,13 +306,14 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.edit_profile -> {
-                // Handle the camera action
+                startActivity(Intent(this, ProfilActivity::class.java))
             }
             R.id.usaha_tersimpan -> {
-
+                startActivity(Intent(this, UsahaTersimpanActivity::class.java))
             }
             R.id.logout -> {
 
+                startActivity(Intent(this, Login::class.java))
             }
         }
 
@@ -286,6 +321,50 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         return true
     }
 
+    fun checkLogin() {
+        Log.w("dari ------- main", userPreferences.token)
+
+        if(userPreferences.token == "")
+            startActivity(Intent(this@MainActivity, Login::class.java))
+        else {
+            showToast(userPreferences.email)
+        }
+    }
+    fun ambilKepadatanPenduduk(kecamatan: String) {
+        doAsync {
+            val call : Call<Wilayah> =  peluangUsahaApi.getWilayah("Martubung")
+            call.enqueue(object : Callback<Wilayah> {
+                override fun onResponse(call: Call<Wilayah>, response: Response<Wilayah>) {
+                    Log.d("b----------------------", response.body().toString())
+                }
+
+                override fun onFailure(call: Call<Wilayah>, t: Throwable) {
+                    Log.d("b----------------------", t.toString())
+                }
+            })
+        }
+
+    }
+
+    fun ambilSemuaUsaha() {
+        doAsync {
+            val token = userPreferences.token
+            var call : Call<List<UsahaResponse>> =  peluangUsahaApi.ambilSemuaUsaha(token)
+            call.enqueue(object : Callback<List<UsahaResponse>> {
+                override fun onResponse(call: Call<List<UsahaResponse>>, response: Response<List<UsahaResponse>>) {
+                    Log.d("Semua usaha -----------", response.body().toString())
+                }
+
+                override fun onFailure(call: Call<List<UsahaResponse>>, t: Throwable) {
+                    Log.d("Semua usaha -----------", t.toString())
+                }
+            })
+        }
+
+    }
+
+
+    fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
 }
-
-

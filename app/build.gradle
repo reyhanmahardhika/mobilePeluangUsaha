@@ -13,6 +13,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // Ganti link berikut menjadi alamat web server / ip address host
+        buildConfigField "String", "BASE_URL", "\"http://192.168.43.168:3000/api/\""
     }
     buildTypes {
         release {
@@ -39,4 +41,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    // Anko
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
 }
