@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 
 import android.support.v4.view.GravityCompat
@@ -255,7 +256,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
 
     }
-    
+
     //digunakan untuk membuat marker
     private fun addMarker(latLng: LatLng, txt_alamat: PlaceAutocompleteFragment) {
         try {
@@ -362,7 +363,6 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
 
     }
-
 
     fun showToast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
