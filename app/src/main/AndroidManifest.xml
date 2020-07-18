@@ -23,7 +23,7 @@
         <activity
             android:name=".DetailUsahaTersimpanActivity"
             android:label="@string/title_activity_detail_usaha_tersimpan"
-            android:theme="@style/AppThemeWithActionbar"></activity>
+            android:theme="@style/AppThemeWithActionbar"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -45,6 +45,7 @@
             android:name=".Login"
             android:theme="@style/AppTheme" />
         <activity android:name=".RegisterActivity" />
+
         <activity
             android:name=".Profile"
             android:label="Akun"
@@ -59,6 +60,9 @@
             android:label="Akun"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppThemeWithActionbar" />
+
+        <activity android:name=".RekomendasiUsaha"/>
+        
     </application>
 
 </manifest>

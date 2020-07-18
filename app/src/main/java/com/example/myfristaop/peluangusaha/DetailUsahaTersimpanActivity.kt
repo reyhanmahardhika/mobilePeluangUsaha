@@ -28,6 +28,7 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
 
     lateinit var pos: LatLng
     lateinit var lokasiUsaha : Location
+    val radius = 1000
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_usaha_tersimpan)
@@ -49,8 +50,8 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
 
 
         CoroutineScope(IO).launch {
-            ambilDataPesaing(pos, 500, usaha.nama_usaha)
-            ambilDataTarget(pos, 500, usaha.target_pasar)
+            ambilDataPesaing(pos, radius, usaha.nama_usaha)
+            ambilDataTarget(pos, radius, usaha.target_pasar)
         }
 
 
@@ -64,7 +65,7 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
 
         }
     }
-    
+
     private suspend fun tampilkandaftarPesaing(pesaing: ArrayList<Tempat>) {
         withContext (Main) {
             var adapter = TargetDanPesaingAdapter(pesaing)
@@ -103,9 +104,10 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
                                         Log.w("nama tempat", namaTempat)
                                         Log.w("jarak", "$jarak")
                                         val df = DecimalFormat("#,##")
-                                        var a = Tempat(namaTempat, "±${df.format(jarak)}m", lokasiPesaing)
-
-                                        listPesaing.add(a)
+                                        if(jarak/1000 <= 1.0) {
+                                            var a = Tempat(namaTempat, "±${df.format(jarak)}m", lokasiPesaing)
+                                            listPesaing.add(a)
+                                        }
                                     } catch (e: JSONException) {
                                         break
                                     }
@@ -161,9 +163,10 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
                                             Log.w("nama tempat", namaTempat)
                                             Log.w("jarak", "${Math.round(jarak)}")
                                             val df = DecimalFormat("#,##")
-                                            var a = Tempat(namaTempat, "±${df.format(jarak)}m", lokasiTarget)
-                                            listTarget.add(a)
-
+                                            if(jarak/1000 <= 1.0) {
+                                                var a = Tempat(namaTempat, "±${df.format(jarak)}m", lokasiTarget)
+                                                listTarget.add(a)
+                                            }
                                         } catch (e: JSONException) {
                                             break
                                         }
