@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailUsahaTersimpanActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/bgLight"
+            android:layout_marginBottom="5dp"
+            android:maxHeight="200dp"
+            />
+        <TextView
+            android:id="@+id/txtNamaDetailUsahaTersimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8pt"
+            android:maxLines="1"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:text="Usaha Bebek Kampung"/>
+        <TextView
+            android:id="@+id/txtModalDetailUsahaTersimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:maxLines="1"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:text="Modal: Rp.120000"/>
+        <TextView
+            android:id="@+id/txtJenisDetailUsahaTersimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:maxLines="1"
+            android:layout_marginBottom="10dp"
+            android:text="Jenis Usaha: Kuliner"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:text="Daftar target Psar"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:background="@color/bgLight">
+            <TextView
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:text="Tidak ada target pasar"
+                android:layout_height="wrap_content">
+            </TextView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvTargetPasarUsahaTersimpan"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                tools:listitem="@layout/item_target_dan_pesaing_list"
+                android:padding="5dp">
+            </android.support.v7.widget.RecyclerView>
+
+
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:text="Daftar Pesaing"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/bgLight"
+            >
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvPesaingUsahaTersimpan"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                tools:listitem="@layout/item_target_dan_pesaing_list"
+                android:padding="5dp">
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:text="Deskripsi Usaha"/>
+        <TextView
+            android:id="@+id/txtDeskripsiDetailUsahaTersimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:text="Loeal afldskja slkj faskl sjdf j aklsf asfkjld  afsdklj"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:text="Bahan Baku"/>
+        <TextView
+            android:id="@+id/txtBahanBakuDetailUsahaTersimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:text="Loeal afldskja slkj faskl sjdf j aklsf asfkjld  afsdklj"/>
+    </LinearLayout>
+    </ScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabHapusDetailUsahaTersimpan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
+
+</RelativeLayout>

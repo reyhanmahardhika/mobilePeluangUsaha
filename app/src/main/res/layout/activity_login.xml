@@ -4,7 +4,7 @@
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/ThemeApk"
+  android:background="@color/colorAccent"
   tool:context=".Login">
 
   <ImageView
@@ -67,9 +67,9 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
-        android:background="#007BFF"
+        android:background="@color/colorPrimary"
         android:text="Masuk"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/colorWhite"
         android:textSize="20dp" />
       <LinearLayout
         android:layout_width="match_parent"

@@ -4,10 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bgLight"
     tools:context=".UsahaTersimpanActivity">
-    <TextView
-        android:id="@+id/txtUsahaTersimpan"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvUsahaTersimpan"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
+        android:padding="10dp"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_usaha_tersimpan_list"/>
 </LinearLayout>

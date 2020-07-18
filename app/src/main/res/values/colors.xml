@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#ffffff</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FFF</color>
-    <color name="ThemeApk">#00c4cc</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1565C0</color>
+    <color name="colorAccent">#00B0FF</color>
+    <color name="colorWhite">#FAFAFA</color>
+    <color name="bgLight">#F1F1F1</color>
+    <color name="colorBlack">#353535</color>
+
 </resources>

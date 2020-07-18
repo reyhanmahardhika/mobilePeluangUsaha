@@ -1,7 +1,9 @@
 package com.example.myfristaop.peluangusaha
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 
@@ -82,5 +84,17 @@ class Login : AppCompatActivity(){
         pattern = Pattern.compile(PASSWORD_PATTERN)
         matcher = pattern.matcher(this)
         return matcher.matches()
+    }
+
+    lateinit var builder: AlertDialog.Builder
+    override fun onBackPressed() {
+        builder = AlertDialog.Builder(this)
+        builder.setMessage("Anda yakin ingin keluar?")
+                .setCancelable(true)
+                .setPositiveButton("Ya" , DialogInterface.OnClickListener { _, _ ->
+                    finishAffinity()
+                })
+                .setNegativeButton("Tidak") { dialog, _ ->  dialog.cancel()}
+        builder.show()
     }
 }

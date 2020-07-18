@@ -1,20 +1,26 @@
 package com.example.myfristaop.peluangusaha
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.widget.Toast
+import com.example.myfristaop.peluangusaha.adapter.UsahaTersimpanAdapter
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
 import com.example.myfristaop.peluangusaha.model.UsahaTersimpanResponse
 import com.example.myfristaop.peluangusaha.preferences.UserPreferences
 import kotlinx.android.synthetic.main.activity_usaha_tersimpan.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+const val EXTRA_USAHA_TERSIMPAN ="EXTRA_USAHA_TERSIMPAN"
 class UsahaTersimpanActivity : AppCompatActivity() {
 
     private lateinit var userPreferences : UserPreferences
@@ -42,13 +48,13 @@ class UsahaTersimpanActivity : AppCompatActivity() {
             var call : Call<List<UsahaTersimpanResponse>> =  peluangUsahaApi.ambilUsahaTersimpan(token)
             call.enqueue(object : Callback<List<UsahaTersimpanResponse>> {
                 override fun onResponse(call: Call<List<UsahaTersimpanResponse>>, response: Response<List<UsahaTersimpanResponse>>) {
-                    var usahaTersimpan : List<UsahaTersimpanResponse>? =  response.body()
-                    if (usahaTersimpan != null) {
-                        var text = ""
-                        for (i in usahaTersimpan) {
-                            text += "id usaha: "+ i.id_usaha + "idWilayah: " + i.id_wilayah +"\n"
+                    if(response.isSuccessful) {
+                        var usahaTersimpan : List<UsahaTersimpanResponse>? =  response.body()
+                        if (usahaTersimpan != null) {
+                            uiThread {
+                                showRvUsahTersimpan(usahaTersimpan)
+                            }
                         }
-                        txtUsahaTersimpan.text = text
                     }
                 }
 
@@ -57,5 +63,19 @@ class UsahaTersimpanActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    private fun showRvUsahTersimpan (list: List<UsahaTersimpanResponse>) {
+        rvUsahaTersimpan.layoutManager = LinearLayoutManager(this)
+        val adapter = UsahaTersimpanAdapter(list as ArrayList<UsahaTersimpanResponse>)
+        rvUsahaTersimpan.adapter = adapter
+        rvUsahaTersimpan.setHasFixedSize(true)
+        adapter.setOnClickListener(object : UsahaTersimpanAdapter.OnItemClickListener {
+            override fun onClickItem(usaha: UsahaTersimpanResponse) {
+                var intent = Intent(this@UsahaTersimpanActivity, DetailUsahaTersimpanActivity::class.java)
+                intent.putExtra(EXTRA_USAHA_TERSIMPAN, usaha)
+                startActivity(intent)
+            }
+        })
     }
 }

@@ -9,20 +9,22 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
+    <uses-feature android:name="android.hardware.camera" />
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera"></uses-feature>
-  <application
+    <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UsahaTersimpanActivity"></activity>
-        <activity android:name=".ProfilActivity" />
+        <activity
+            android:name=".DetailUsahaTersimpanActivity"
+            android:label="@string/title_activity_detail_usaha_tersimpan"
+            android:theme="@style/AppThemeWithActionbar"></activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -39,10 +41,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login" />
+        <activity
+            android:name=".Login"
+            android:theme="@style/AppTheme" />
         <activity android:name=".RegisterActivity" />
-
-        <activity android:name=".Profile"/>
+        <activity
+            android:name=".Profile"
+            android:label="Akun"
+            android:theme="@style/AppThemeWithActionbar" />
+        <activity
+            android:name=".UsahaTersimpanActivity"
+            android:label="Usaha Tersimpan"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppThemeWithActionbar" />
+        <activity
+            android:name=".ProfilActivity"
+            android:label="Akun"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppThemeWithActionbar" />
     </application>
 
 </manifest>

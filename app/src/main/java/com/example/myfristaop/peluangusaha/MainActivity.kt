@@ -1,20 +1,18 @@
 package com.example.myfristaop.peluangusaha
 
-
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.AsyncTask
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -24,7 +22,6 @@ import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
 import com.example.myfristaop.peluangusaha.model.Wilayah
 import com.example.myfristaop.peluangusaha.preferences.UserPreferences
-
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -36,15 +33,13 @@ import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.compat.Place
 import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment
 import com.google.android.libraries.places.compat.ui.PlaceSelectionListener
+import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.activity_navigation.*
 import kotlinx.android.synthetic.main.app_bar_navigation.*
-
-import kotlinx.android.synthetic.main.activity_map.*
 import org.jetbrains.anko.doAsync
 import retrofit2.Call
 import retrofit2.Callback
@@ -55,7 +50,6 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -96,8 +90,6 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         // Mengambil semua usaha
         ambilSemuaUsaha()
-
-
 
         if(position== LatLng(0.0, 0.0)){ btn_cari.isEnabled=false}
         //inisialisasi text autocomplate alamat
@@ -161,7 +153,6 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val medan = LatLng(3.597031, 98.678513)
 
         txt_alamat.setHint("Cari Lokasi Anda")
-
 
         val cu = CameraUpdateFactory.newLatLngZoom(medan, 13F)
         mMap.animateCamera(cu)
@@ -303,6 +294,8 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
+    lateinit var alertDialog : AlertDialog.Builder
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -313,8 +306,13 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 startActivity(Intent(this, UsahaTersimpanActivity::class.java))
             }
             R.id.logout -> {
+                alertDialog = AlertDialog.Builder(this)
+                alertDialog.setMessage("Anda yakin ingin keluar?")
+                alertDialog.setCancelable(true)
+                alertDialog.setPositiveButton("Yes") { dialog, id -> logout() }
+                alertDialog.setNegativeButton("Tidak") { dialog, id -> dialog.cancel()}
+                alertDialog.show()
 
-                startActivity(Intent(this, Login::class.java))
             }
         }
 
@@ -322,21 +320,26 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         return true
     }
 
+    // Check apakah user sudah login (data user ada di userPreferences)
     fun checkLogin() {
-        Log.w("dari ------- main", userPreferences.token)
-
         if(userPreferences.token == "")
             startActivity(Intent(this@MainActivity, Login::class.java))
         else {
             showToast(userPreferences.email)
         }
     }
+    var list = arrayListOf<String?>()
     fun ambilKepadatanPenduduk(kecamatan: String) {
         doAsync {
             val call : Call<Wilayah> =  peluangUsahaApi.getWilayah("Martubung")
             call.enqueue(object : Callback<Wilayah> {
                 override fun onResponse(call: Call<Wilayah>, response: Response<Wilayah>) {
                     Log.d("b----------------------", response.body().toString())
+                    var wilayah = response.body()
+                    var kepadatan_penduduk = wilayah?.kepadatan_penduduk
+                    list.add(wilayah?.id_wilayah)
+                    list.add(wilayah?.kelurahan)
+                    list.add(wilayah?.kepadatan_penduduk)
                 }
 
                 override fun onFailure(call: Call<Wilayah>, t: Throwable) {
@@ -367,4 +370,11 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     fun showToast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
+
+    // Hapus akun dan logout
+    fun logout() {
+        userPreferences.clearValue()
+        checkLogin()
+    }
+
 }
