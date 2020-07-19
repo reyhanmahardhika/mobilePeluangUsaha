@@ -309,7 +309,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 alertDialog = AlertDialog.Builder(this)
                 alertDialog.setMessage("Anda yakin ingin keluar?")
                 alertDialog.setCancelable(true)
-                alertDialog.setPositiveButton("Yes") { dialog, id -> logout() }
+                alertDialog.setPositiveButton("Ya") { dialog, id -> logout() }
                 alertDialog.setNegativeButton("Tidak") { dialog, id -> dialog.cancel()}
                 alertDialog.show()
 
@@ -329,7 +329,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
     var list = arrayListOf<String?>()
-    fun ambilKepadatanPenduduk(kecamatan: String) {
+    fun ambilKepadatanPenduduk(kelura: String) {
         doAsync {
             val call : Call<Wilayah> =  peluangUsahaApi.getWilayah("Martubung")
             call.enqueue(object : Callback<Wilayah> {
