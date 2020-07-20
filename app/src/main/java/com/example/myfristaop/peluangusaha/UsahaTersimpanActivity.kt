@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.example.myfristaop.peluangusaha.adapter.UsahaTersimpanAdapter
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
@@ -21,6 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 const val EXTRA_USAHA_TERSIMPAN ="EXTRA_USAHA_TERSIMPAN"
+
 class UsahaTersimpanActivity : AppCompatActivity() {
 
     private lateinit var userPreferences : UserPreferences
@@ -68,8 +70,9 @@ class UsahaTersimpanActivity : AppCompatActivity() {
     private fun showRvUsahTersimpan (list: List<UsahaTersimpanResponse>) {
         rvUsahaTersimpan.layoutManager = LinearLayoutManager(this)
         val adapter = UsahaTersimpanAdapter(list as ArrayList<UsahaTersimpanResponse>)
-        rvUsahaTersimpan.adapter = adapter
+
         rvUsahaTersimpan.setHasFixedSize(true)
+
         adapter.setOnClickListener(object : UsahaTersimpanAdapter.OnItemClickListener {
             override fun onClickItem(usaha: UsahaTersimpanResponse) {
                 var intent = Intent(this@UsahaTersimpanActivity, DetailUsahaTersimpanActivity::class.java)
@@ -77,5 +80,12 @@ class UsahaTersimpanActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         })
+        rvUsahaTersimpan.adapter = adapter
+        pbListUsahaTersimpan.visibility = View.GONE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ambilUsahaTersimpan()
     }
 }

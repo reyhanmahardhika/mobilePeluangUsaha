@@ -96,8 +96,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     var spadat : Double = 0.0
 
     var tingkatKepadatanLokasi : String = "tidak padat"
-    var jumlah = 0
-    var jarak : Double= 0.0
 
     var cari_targetPasar : MutableList<String> = mutableListOf()
     companion object {
@@ -233,7 +231,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 Log.d("error","Map gagal dimuat")
             }
         })
-
+        
         btn_cari.setOnClickListener {
             if(position!=LatLng(0.0,0.0)) {
                 if(txt_modal.text.toString()!=""){
@@ -257,7 +255,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
         try {
             mMap.clear()
             val marker = mMap.addMarker(MarkerOptions()
-                    .position(latLng).draggable(true).title("Lokasi Anda"))
+                    .position(latLng).draggable(true).title("Lokasi Usaha Anda"))
             getAddress(position,txt_alamat)
             marker.showInfoWindow()
             marker.isDraggable = false

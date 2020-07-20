@@ -89,7 +89,7 @@ class Login : AppCompatActivity(){
     lateinit var builder: AlertDialog.Builder
     override fun onBackPressed() {
         builder = AlertDialog.Builder(this)
-        builder.setMessage("Anda yakin ingin keluar?")
+        builder.setMessage("Anda yakin menutup aplikasi?")
                 .setCancelable(true)
                 .setPositiveButton("Ya" , DialogInterface.OnClickListener { _, _ ->
                     finishAffinity()

@@ -22,7 +22,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".DetailUsahaTersimpanActivity"
-            android:label="@string/title_activity_detail_usaha_tersimpan"
+            android:label="Detail Usaha Tersimpan"
+            android:parentActivityName=".UsahaTersimpanActivity"
             android:theme="@style/AppThemeWithActionbar"/>
 
         <meta-data
@@ -32,12 +33,11 @@
         <activity
             android:name=".MainActivity"
             android:icon="@drawable/ic_peluang_usaha"
-            android:label="Peluang Usaha"
+            android:label="SPK Peluang Usaha"
             android:logo="@drawable/ic_peluang_usaha"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -46,10 +46,6 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".RegisterActivity" />
 
-        <activity
-            android:name=".Profile"
-            android:label="Akun"
-            android:theme="@style/AppThemeWithActionbar" />
         <activity
             android:name=".UsahaTersimpanActivity"
             android:label="Usaha Tersimpan"
@@ -67,7 +63,7 @@
             android:name=".Ambil"
             android:label="Ambil Data"
             android:parentActivityName=".MainActivity"/>
-        
+
     </application>
 
 </manifest>

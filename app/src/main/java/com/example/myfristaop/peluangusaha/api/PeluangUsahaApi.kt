@@ -21,4 +21,8 @@ interface PeluangUsahaApi {
 
     @GET("usaha/ambilUsaha")
     fun ambilSemuaUsaha(@Header ("token") token: String) : Call<List<UsahaResponse>>
+
+    @DELETE("usaha/hapusUsahaTersimpanById/{id_usaha}")
+    fun hapusUsahaTersimpan(@Header ("token") token: String, @Path("id_usaha") id_usaha: String): Call<Void>
+
 }

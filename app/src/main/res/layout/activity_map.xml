@@ -63,7 +63,7 @@
                 android:layout_marginTop="5dp"
                 android:hint="Modal yang Anda miliki (Rp)"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="16sp" />
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btn_cari"

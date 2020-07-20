@@ -9,10 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="16dp"
         android:orientation="vertical">
         <ImageView
@@ -20,8 +19,7 @@
             android:layout_height="200dp"
             android:background="@color/bgLight"
             android:layout_marginBottom="5dp"
-            android:maxHeight="200dp"
-            />
+            android:maxHeight="200dp" />
         <TextView
             android:id="@+id/txtNamaDetailUsahaTersimpan"
             android:layout_width="match_parent"
@@ -30,7 +28,7 @@
             android:maxLines="1"
             android:textStyle="bold"
             android:textColor="@color/colorBlack"
-            android:text="Usaha Bebek Kampung"/>
+            android:text=""/>
         <TextView
             android:id="@+id/txtModalDetailUsahaTersimpan"
             android:layout_width="match_parent"
@@ -54,59 +52,103 @@
             android:layout_height="wrap_content"
             android:textSize="7pt"
             android:textStyle="bold"
+            android:layout_marginBottom="5dp"
             android:textColor="@color/colorBlack"
-            android:text="Daftar target Psar"/>
+            android:text="Hasil Analisis Lokasi"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="50dp"
-            android:layout_marginBottom="10dp"
             android:orientation="vertical"
             android:background="@color/bgLight">
             <TextView
+                android:id="@+id/labelDataTargetPasarDetailUsaha"
                 android:layout_width="match_parent"
-                android:padding="5dp"
-                android:text="Tidak ada target pasar"
-                android:layout_height="wrap_content">
-            </TextView>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rvTargetPasarUsahaTersimpan"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:textColor="@color/colorBlack"
+                android:text="Daftar Target pasar"/>
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                tools:listitem="@layout/item_target_dan_pesaing_list"
-                android:padding="5dp">
-            </android.support.v7.widget.RecyclerView>
-
+                android:layout_height="wrap_content"
+                android:minHeight="50dp"
+                android:layout_marginBottom="10dp">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvTargetPasarUsahaTersimpan"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    tools:listitem="@layout/item_target_dan_pesaing_list"
+                    android:padding="8dp">
+                </android.support.v7.widget.RecyclerView>
+                <ProgressBar
+                    android:id="@+id/pbTargetDetailUsaha"
+                    android:layout_width="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_height="wrap_content"/>
+                <Button
+                    android:id="@+id/btnTampilkanTargetUsahaTersimpanDalamPeta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rvTargetPasarUsahaTersimpan"
+                    android:backgroundTint="@color/colorAccent"
+                    android:textSize="5pt"
+                    android:layout_marginLeft="5dp"
+                    android:visibility="gone"
+                    android:textColor="@color/colorWhite"
+                    android:text="Lihat dalam peta"/>
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/labelDataPesaingDetailUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:layout_marginLeft="8dp"
+                android:textColor="@color/colorBlack"
+                android:text="Daftar Pesaing"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="50dp"
+                >
+                <TextView
+                    android:id="@+id/txtTidakAdaPesaingDetailUsaha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:padding="8dp"
+                    android:text="Pesaing dengan jenis usah yang sama tidak ditemukan."/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvPesaingUsahaTersimpan"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    tools:listitem="@layout/item_target_dan_pesaing_list"
+                    android:padding="8dp">
+                </android.support.v7.widget.RecyclerView>
+                <ProgressBar
+                    android:id="@+id/pbPesaingDetailUsaha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"/>
+                <Button
+                    android:id="@+id/btnTampilkanPesaingUsahaTersimpanDalamPeta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rvPesaingUsahaTersimpan"
+                    android:backgroundTint="@color/colorAccent"
+                    android:textSize="5pt"
+                    android:layout_marginLeft="5dp"
+                    android:visibility="gone"
+                    android:textColor="@color/colorWhite"
+                    android:text="Lihat dalam peta"/>
+            </RelativeLayout>
 
         </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="7pt"
             android:textStyle="bold"
-            android:textColor="@color/colorBlack"
-            android:text="Daftar Pesaing"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="50dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/bgLight"
-            >
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rvPesaingUsahaTersimpan"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                tools:listitem="@layout/item_target_dan_pesaing_list"
-                android:padding="5dp">
-            </android.support.v7.widget.RecyclerView>
-
-        </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="7pt"
-            android:textStyle="bold"
+            android:layout_marginTop="10dp"
             android:textColor="@color/colorBlack"
             android:text="Deskripsi Usaha"/>
         <TextView
@@ -114,13 +156,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="7pt"
-            android:text="Loeal afldskja slkj faskl sjdf j aklsf asfkjld  afsdklj"/>
+            android:text="Kalimat deskripsi usaha"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="7pt"
-            android:layout_marginTop="10dp"
             android:textStyle="bold"
+            android:layout_marginTop="10dp"
             android:textColor="@color/colorBlack"
             android:text="Bahan Baku"/>
         <TextView
@@ -128,7 +170,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="7pt"
-            android:text="Loeal afldskja slkj faskl sjdf j aklsf asfkjld  afsdklj"/>
+            android:text="Bahan Baku"/>
     </LinearLayout>
     </ScrollView>
     <android.support.design.widget.FloatingActionButton
@@ -137,7 +179,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_delete_black_24dp"/>
 
 </RelativeLayout>

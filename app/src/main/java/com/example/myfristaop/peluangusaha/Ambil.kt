@@ -24,12 +24,11 @@ import java.util.*
 class Ambil :MainActivity(){
     suspend fun Data(pos: LatLng, radius: Int, kataKunci: String,req : Int) {
         var jarakTerdekat =0
-        var jarak =0
-        var jumlah :Int =0
-        var handlerSelesai = false
 
         withContext(Dispatchers.IO) {
             async {
+                var jarak  = 0
+                var jumlah = 0
                 val client = SyncHttpClient()
                 val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=$radius&name=$kataKunci&key=${BuildConfig.MAP_KEY}"
                 val charset = Charsets.UTF_8
@@ -37,15 +36,15 @@ class Ambil :MainActivity(){
                     @SuppressLint("LongLogTag")
                     override fun onSuccess(statusCode: Int, headers: Array<out Header>?, responseBody: ByteArray?) {
                         if (responseBody != null) {
-                            var hasil = JSONObject(responseBody.toString(charset))
-                            var res: JSONArray? = hasil.getJSONArray("results")
+                            val hasil = JSONObject(responseBody.toString(charset))
+                            val res: JSONArray? = hasil.getJSONArray("results")
                             if (res != null) {
                                 for (i in 0 until res.length()) {
                                     try {
                                         val oneObject: JSONObject = res.getJSONObject(i)
                                         val posObj: JSONObject = oneObject.getJSONObject("geometry").getJSONObject("location")
                                         val namaTempat = oneObject.getString("name")
-                                        var lokasiTarget = Location("")
+                                        val lokasiTarget = Location("")
                                         lokasiTarget.latitude = posObj.getDouble("lat")
                                         lokasiTarget.longitude = posObj.getDouble(("lng"))
 
@@ -55,14 +54,15 @@ class Ambil :MainActivity(){
 
                                         jarak = lokasiUsaha.distanceTo(lokasiTarget).toInt()
                                         if(jarak <= 1000) {
+                                            println("jarak : $jarak,, jarak terdekat : $jarakTerdekat")
                                             jumlah+=1
                                             if(i==0){jarakTerdekat = jarak}
                                             else if(jarak<jarakTerdekat){jarakTerdekat=jarak}
                                         }
                                     } catch (e: JSONException) {
-                                        break
-                                    }
+                                        break }
                                 }
+
                             }
                         }
                         if(req ==1) {
@@ -73,7 +73,6 @@ class Ambil :MainActivity(){
                             val data:String =("$kataKunci,$jumlah")
                             InputData(data,req)
                         }
-                        handlerSelesai=true
                     }
                     override fun onFailure(statusCode: Int, headers: Array<out Header>?, responseBody: ByteArray?, error: Throwable?) {
                         TODO("Not yet implemented")

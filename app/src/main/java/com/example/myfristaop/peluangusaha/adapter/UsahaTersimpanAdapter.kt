@@ -35,7 +35,7 @@ class UsahaTersimpanAdapter(private val listUsaha : ArrayList<UsahaTersimpanResp
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsahaTersimpan)
-//        val destinationPhoto : ImageView = itemView.findViewById(R.id.destination_img)
+//        val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
         val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsahaTersimpan)
     }
 
