@@ -15,7 +15,8 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="70dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/colorPrimary"
+        android:background="#fff"
+        android:backgroundTint="#fff"
         app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
 </android.support.design.widget.CoordinatorLayout>

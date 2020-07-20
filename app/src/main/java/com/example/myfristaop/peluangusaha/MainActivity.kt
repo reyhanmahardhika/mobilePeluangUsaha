@@ -1,5 +1,8 @@
 package com.example.myfristaop.peluangusaha
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
@@ -18,6 +21,7 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
+import com.example.myfristaop.peluangusaha.adapter.Tempat
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
 import com.example.myfristaop.peluangusaha.model.Wilayah
@@ -37,10 +41,18 @@ import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.compat.Place
 import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment
 import com.google.android.libraries.places.compat.ui.PlaceSelectionListener
+import com.loopj.android.http.AsyncHttpResponseHandler
+import com.loopj.android.http.SyncHttpClient
+import cz.msebera.android.httpclient.Header
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.activity_navigation.*
 import kotlinx.android.synthetic.main.app_bar_navigation.*
+import kotlinx.coroutines.*
+import org.jetbrains.anko.AnkoAsyncContext
 import org.jetbrains.anko.doAsync
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,9 +64,10 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.DecimalFormat
 
 
-open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private lateinit var nav: ActionBarDrawerToggle
     lateinit var mMap: GoogleMap
@@ -62,6 +75,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     lateinit var txt_alamat : PlaceAutocompleteFragment
 
     var kelurahan = ""
+    var kota = ""
     private var position: LatLng = LatLng(0.0, 0.0)
     lateinit var user : FusedLocationProviderClient
 
@@ -69,13 +83,56 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private val prefFileName = "DATAUSER"
 
     lateinit var retrofit: Retrofit
-    lateinit var peluangUsahaApi: PeluangUsahaApi
+    lateinit var peluangUsahaApi : PeluangUsahaApi
+
+    val df : DecimalFormat = DecimalFormat("#.###") //Decimal Format
+
+
+    //--------- ini adalah variabel yang digunakan untuk perhitungan algoritma-----//
+    var  tpadat :Double = 0.0
+    var kpadat : Double = 0.0
+    var cpadat : Double = 0.0
+    var padat : Double = 0.0
+    var spadat : Double = 0.0
+
+    var tingkatKepadatanLokasi : String = "tidak padat"
+    var jumlah = 0
+    var jarak : Double= 0.0
+
+    var cari_targetPasar : MutableList<String> = mutableListOf()
+    companion object {
+        var tLokasi : MutableList<String> = mutableListOf()
+        var pesaingUsaha : MutableList<String> = mutableListOf()
+    }
+
+    var kepadatan_penduduk_lokasi : Double = 0.0
+
+    //variabel usaha
+    var usaha : List<UsahaResponse>? = null
+
+    //variabel bobot kriteria
+    val bobot1 : Double = 5.0
+    val bobot2 : Double = 4.0
+    val bobot3 : Double = 3.0
+    val bobot4 : Double = 5.0
+    val bobot5 : Double = 2.0
+
+    //variabel hasil normalisasi(perbaikan bobot)
+    var W1 : Double = (bobot1/(bobot1+bobot2+bobot3+bobot4+bobot5))
+    var W2 : Double = (bobot2/(bobot1+bobot2+bobot3+bobot4+bobot5))
+    var W3 : Double = (bobot3/(bobot1+bobot2+bobot3+bobot4+bobot5))
+    var W4 : Double = (bobot4/(bobot1+bobot2+bobot3+bobot4+bobot5))
+    var W5 : Double = (bobot5/(bobot1+bobot2+bobot3+bobot4+bobot5))
+    //---------------------------------------------------------------------------------
+
+
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
 
-        // Sebelum lanjut cek apakah user sudah login
 
+        // Sebelum lanjut cek apakah user sudah login
         userPreferences = UserPreferences(this, prefFileName)
         checkLogin()
 
@@ -85,20 +142,14 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 .build()
         peluangUsahaApi = retrofit.create(PeluangUsahaApi::class.java)
 
-        // Mengambil kepadatan penduduk berdasarkan kecamatan
-        // ambilKepadatanPenduduk("Binjai")
-
         // Mengambil semua usaha
         ambilSemuaUsaha()
 
-        if(position== LatLng(0.0, 0.0)){ btn_cari.isEnabled=false}
         //inisialisasi text autocomplate alamat
         txt_alamat = fragmentManager.findFragmentById(R.id.place_autocomplete_fragment) as PlaceAutocompleteFragment
 
         mapFragment = fragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
-
-
 
         val toolbar = findViewById<Toolbar>(R.id.app_toolbar)
         setSupportActionBar(toolbar)
@@ -116,6 +167,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 user = LocationServices.getFusedLocationProviderClient(this)
                 if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
                     getCurrentLocation()
+                    fab_myLocation.background.setTint(resources.getColor(R.color.colorPrimary))
                 }
                 else{
                     ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),44)
@@ -147,6 +199,7 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
     //dijalankan ketika map sudah berhasil di tampilkan
+    @SuppressLint("NewApi")
     override fun onMapReady(googleMap: GoogleMap) {
         Toast.makeText(applicationContext, "Klik pada peta untuk menentukan lokasi usaha Anda!", Toast.LENGTH_LONG).show()
         mMap = googleMap
@@ -160,8 +213,16 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         mMap.setOnMapClickListener(GoogleMap.OnMapClickListener { LatLng ->
             position = LatLng
             addMarker(position, txt_alamat)
+            fab_myLocation.background.setTint(resources.getColor(R.color.colorWhite))
 
         })
+
+        txt_alamat.clearIcon.setOnClickListener(){
+            mMap.clear()
+            position= LatLng(0.0,0.0)
+            txt_alamat.setText(null)
+            fab_myLocation.background.setTint(resources.getColor(R.color.colorWhite))
+        }
 
         txt_alamat.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
@@ -174,93 +235,37 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         })
 
         btn_cari.setOnClickListener {
-            try {
-                if(position!= LatLng(0.0, 0.0)) {
-                    val url: String = getUrl(position, txt_modal.text.toString(), 1000.0)
-                    new_PlaceTask(mMap).execute(url)}
-                 else{ android.widget.Toast.makeText(applicationContext, "Mohon tentukan lokasi usaha Anda terlebih dahulu ", android.widget.Toast.LENGTH_LONG).show() }
+            if(position!=LatLng(0.0,0.0)) {
+                if(txt_modal.text.toString()!=""){
+                    if(kota == "Kota Medan"){
+                            CariRekomendasiUsaha()
+                    }
+                    else{showToast("Lokasi yang ditetapkan harus berada di kawasan Kota Medan!") }
+                }
+                else{showToast("Harap tentukan modal usaha yang Anda miliki terlebih dahulu!")
+                }
             }
-            catch(e:Exception){
-                Toast.makeText(applicationContext, "Harap tentukan lokasi usaha Anda!", Toast.LENGTH_LONG).show()
+            else {showToast("Harap tentukan lokasi usaha Anda terlebih dahulu!")
             }
         }
 
     }
 
-    //digunakan untuk mengambil url untuk menjalankan place API by nearby search
-    private fun getUrl(position : LatLng, kataKunci: String, radius: Double): String {
-        var googlePlacesUrl=""
-        try {
-                googlePlacesUrl = ("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                        position.latitude + "," +
-                        position.longitude + "&radius=" +
-                        radius + "&name=Masjid&sensor=true&key=AIzaSyBeNiSKscMn5k2Ymh0FKA6Ubmt7weTjVMU")
-                Log.d("getUrl", googlePlacesUrl)
-                android.widget.Toast.makeText(applicationContext, "Google PlaceURL berhasil dimuat ", android.widget.Toast.LENGTH_LONG).show()
-        }
-        catch(e:Exception){
-            android.widget.Toast.makeText(applicationContext, "Google PlaceURL gagal dimuat!! ", android.widget.Toast.LENGTH_LONG).show()
-        }
-        return (googlePlacesUrl)
-    }
-
-    private class new_PlaceTask(mMap: GoogleMap) : AsyncTask<String, Int, String>() {
-        val map = mMap
-        override fun doInBackground(vararg params: String?): String {
-            var data :String = null.toString()
-            try{
-                data = downloadUrl(params[0])
-            }catch (e: IOException){
-                e.printStackTrace()
-            }
-            return data
-        }
-
-        override fun onPostExecute(s: String?) {
-            ParserTask(map).execute(s)
-        }
-
-        @Throws(IOException::class)
-        fun downloadUrl(string: String?): String {
-            //initialize url
-            val url : URL = URL(string)
-            //initialize connection
-            val connection : HttpURLConnection = url.openConnection( )as HttpURLConnection
-            //Connect Connection
-            connection.connect()
-            //Initialize input stream
-            val stream : InputStream = connection.inputStream
-            //Initialize buffer reader
-            val reader : BufferedReader = BufferedReader(InputStreamReader(stream))
-            //Initaialize string builder
-            val builder : StringBuilder = StringBuilder()
-            var line :String?=null
-
-            while({ line = reader.readLine(); line }() != null){
-                builder.append(line)
-            }
-            //get append data
-            val data : String = builder.toString()
-            reader.close()
-
-            return  data
-        }
-
-    }
 
     //digunakan untuk membuat marker
     private fun addMarker(latLng: LatLng, txt_alamat: PlaceAutocompleteFragment) {
         try {
             mMap.clear()
             val marker = mMap.addMarker(MarkerOptions()
-                    .position(latLng).draggable(true).title(getAddress(latLng, txt_alamat)))
+                    .position(latLng).draggable(true).title("Lokasi Anda"))
+            getAddress(position,txt_alamat)
             marker.showInfoWindow()
             marker.isDraggable = false
             val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(1000.0))
 
             val zoom = mMap.cameraPosition.zoom.toDouble()
-            if (zoom < 15.7) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 15.7F))
+            if (zoom < 14.7) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 14.7F))
             } else {
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(position))
             }
@@ -275,9 +280,10 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             val geocoder = Geocoder(this)
             val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             alamat = list[0].getAddressLine(0)
+            kota = list[0].subAdminArea
+            Log.d("Kota : ",kota)
             kelurahan = list[0].subLocality
             txt_alamat.setText(alamat)
-
         } catch (e: Exception) {
             Toast.makeText(applicationContext, "Gagal mendapatkan lokasi, Periksa koneksi jaringan Anda dan coba kembali!", Toast.LENGTH_LONG).show()
         }
@@ -328,18 +334,27 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             showToast(userPreferences.email)
         }
     }
-    var list = arrayListOf<String?>()
-    fun ambilKepadatanPenduduk(kecamatan: String) {
+
+    fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    // Hapus akun dan logout
+    fun logout() {
+        userPreferences.clearValue()
+        checkLogin()
+    }
+
+    /*-------------------------------------Ini adalah fungsi/method perhitungan algoritma SPK Peluang usaha-----------------------------------------*/
+
+    fun ambilKepadatanPenduduk(kelurahan: String) {
         doAsync {
-            val call : Call<Wilayah> =  peluangUsahaApi.getWilayah("Martubung")
+            val call : Call<Wilayah> =  peluangUsahaApi.getWilayah(kelurahan)
             call.enqueue(object : Callback<Wilayah> {
                 override fun onResponse(call: Call<Wilayah>, response: Response<Wilayah>) {
-                    Log.d("b----------------------", response.body().toString())
                     var wilayah = response.body()
-                    var kepadatan_penduduk = wilayah?.kepadatan_penduduk
-                    list.add(wilayah?.id_wilayah)
-                    list.add(wilayah?.kelurahan)
-                    list.add(wilayah?.kepadatan_penduduk)
+                    kepadatan_penduduk_lokasi = wilayah?.kepadatan_penduduk!!.toDouble()
+                    hitungKepadatan(kepadatan_penduduk_lokasi)
                 }
 
                 override fun onFailure(call: Call<Wilayah>, t: Throwable) {
@@ -353,28 +368,224 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     fun ambilSemuaUsaha() {
         doAsync {
             val token = userPreferences.token
-            var call : Call<List<UsahaResponse>> =  peluangUsahaApi.ambilSemuaUsaha(token)
+            val call : Call<List<UsahaResponse>> =  peluangUsahaApi.ambilSemuaUsaha(token)
             call.enqueue(object : Callback<List<UsahaResponse>> {
                 override fun onResponse(call: Call<List<UsahaResponse>>, response: Response<List<UsahaResponse>>) {
-                    Log.d("Semua usaha -----------", response.body().toString())
+                    usaha = response.body()
+                    //gabungkan target pasar dari  masing masing usaha menjadi 1 variabel
+                    for(i in 0..((usaha!!.size)-1)){
+                        val tmp_targetpasar = usaha!![i].target_pasar.toLowerCase().split(", ")
+                        for(j in 0..((tmp_targetpasar.size)-1)){
+                            if(i==0){ cari_targetPasar.add(tmp_targetpasar[j])}
+                            else if(cari_targetPasar.indexOf(tmp_targetpasar[j]) == -1 ){
+                                cari_targetPasar.add(tmp_targetpasar[j])
+                            }
+                        }
+                    }
                 }
-
                 override fun onFailure(call: Call<List<UsahaResponse>>, t: Throwable) {
                     Log.d("Semua usaha -----------", t.toString())
                 }
             })
         }
+    }
+
+    fun hitungKepadatan(x : Double){
+
+        if (x <= 3233) tpadat = 1.0
+        else if (x in 3233.0..8288.75)
+        {
+            tpadat = ((8288.75 - x) / (8288.75 - 3233))
+        }
+        else tpadat = 0.0
+
+        if (x <= 3233 || x >= 8288.75) kpadat = 0.0
+        else if (x in 3233.0..8288.75)
+        {
+            kpadat = ((x - 3233) / (8288.75 - 3233))
+        }
+        else kpadat = ((13344.5 - x) / (13344.5 - 3233))
+
+        if (x <= 8288.75 || x >= 18400.25) cpadat = 0.0
+        else if (x in 8288.75..13344.5)
+        {
+            cpadat = ((x - 8288.75) / (13344.5 - 8288.75))
+        }
+        else cpadat = ((18400.25 - x) / (18400.25 - 8288.75))
+
+        if (x <= 13344.5 || x >= 23456) padat = 0.0
+        else if (x in 13344.5..18400.25)
+        {
+            padat = ((x - 13344.5) / (18400.25 - 13344.5))
+        }
+        else padat = ((23456 - x) / (23456 - 13344.5))
+
+        if (x <= 18400.25) spadat = 0.0
+        else if (x in 18400.25..23456.0)
+        {
+            spadat = ((x - 18400.25) / (23456 - 18400.25))
+        }
+        else spadat = 1.0
+
+
+        if (kpadat >= tpadat) { tingkatKepadatanLokasi = "kurang padat"; }
+        if (cpadat >= kpadat && cpadat >= tpadat) { tingkatKepadatanLokasi = "cukup padat"; }
+        if (padat >= cpadat && padat >= kpadat && padat >=tpadat) { tingkatKepadatanLokasi = "padat"; }
+        if (spadat >= padat && spadat >= cpadat && spadat >= kpadat && spadat>=tpadat) { tingkatKepadatanLokasi = "sangat padat"; }
 
     }
 
-    fun showToast(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
+    @SuppressLint("LongLogTag")
+    fun CariRekomendasiUsaha(){
+        val ambil :Ambil = Ambil()
+        val modal : Int = txt_modal.text.toString().toInt()
+        Log.d("Kelurahan : ",kelurahan)
+        ambilKepadatanPenduduk(kelurahan)
+        Log.d("Banyaknya Usaha : ", ""+usaha!!.size)
+        Log.d("Usaha --->> ", ""+usaha.toString())
+        Log.d("Target pasar semua usaha",""+cari_targetPasar.toString())
 
-    // Hapus akun dan logout
-    fun logout() {
-        userPreferences.clearValue()
-        checkLogin()
-    }
+        CoroutineScope(Dispatchers.IO).launch{
+            for(i in 0..((cari_targetPasar.size)-1)){ //mencari data target pasar
+                    ambil.Data(position,1000,cari_targetPasar[i],1) }
+            Log.d("Target pasar lokasi",""+tLokasi.toString())
 
+
+            for(i in 0..((usaha!!.size)-1)){
+                ambil.Data(position,1000,usaha!![i].nama_usaha,2)} // 2 = request Pesaing
+            Log.d("Jumlah Pesaing pada lokasi",""+ pesaingUsaha.toString())
+
+            //------Pembentukan Tabel 3.1.1.4 Nilai Preferensi Setiap Usaha--------
+            val preferensi : Array<Array<String?>> = Array(usaha!!.size,{ arrayOfNulls<String>(7)} )
+
+            println("\nTabel Nilai Preferensi Kriteria : ")
+            println("\nAlternatif\tC1\tC2\tC3\tC4\tC5")
+            for(i in 0 until usaha!!.size){
+                var jlhTargetPasar = 0
+
+                for(j in 0..6){
+                    if(j==0){
+                        preferensi[i][j]="U" + (i + 1).toString()
+                        print(preferensi[i][j].toString()+"\t")
+                    }
+                    else if(j==1){
+                        preferensi[i][j]=usaha!![i].nama_usaha
+                        print(preferensi[i][j].toString()+"\t")
+
+                    }
+                    else if(j==2){
+                        //nilai modal usaha(1/0) "1 = memenuhi" ; "0= tidak memenuhi"
+                        if(usaha!![i].modal<=modal){
+                            preferensi[i][j]="1" }
+                        else{
+                            preferensi[i][j]="0" }
+                        print(preferensi[i][j].toString()+"\t")
+                    }
+                    else if(j==3){
+                        //menghitung nilai jumlah target pasar
+                        for(a in 0 until cari_targetPasar.size){
+                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(",")
+                            val tmp = tLokasi[a].split(",")
+                            for(b in 0 until targetpasar_usaha.size) {
+                                if(tmp[0]==targetpasar_usaha[b]){
+                                    jlhTargetPasar+= tmp[1].toInt()
+                                    break
+                                }
+                            }
+                        }
+                        preferensi[i][j]= jlhTargetPasar.toString()
+                        print(preferensi[i][j].toString()+"\t")
+                    }
+                    else if(j==4){
+                        //Menghitung Jarak Target Pasar
+                        var jarak = 0
+
+                        for(a in 0 until cari_targetPasar.size){
+                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(",")
+                            val tmp = tLokasi[a].split(",")
+                            for(b in 0 until targetpasar_usaha.size) {
+                                if(tmp[0]==targetpasar_usaha[b]){
+                                    if(jarak==0){jarak = tmp[2].toInt()}
+                                    else{
+                                        if(jarak > tmp[2].toInt()){
+                                            jarak = tmp[2].toInt()
+                                        }
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                        preferensi[i][j]= jarak.toString()
+                        print(preferensi[i][j].toString()+"\t")
+                    }
+                    else if(j==5){
+                        val preferensiKepadatan : Array<String> = arrayOf("tidak padat",
+                                "kurang padat","cukup padat","padat","sangat padat")
+                        var ramai = 1
+                        var sepi = 5
+                        for(a in 0 until preferensiKepadatan.size){
+                            if(tingkatKepadatanLokasi==preferensiKepadatan[a]){
+                                if(usaha!![i].jenis_usaha.toString()=="1"){
+                                    preferensi[i][j]=ramai.toString() }
+                                else{
+                                    preferensi[i][j]=sepi.toString() }
+                            }
+                            ramai += 1
+                            sepi -= 1
+                        }
+                    }
+                    else if(j==6){
+                        for(a in 0 until pesaingUsaha.size){
+                            val tmp = pesaingUsaha[a].split(",")
+                            preferensi[i][j]=tmp[1]
+                        }
+                        print(preferensi[i][j].toString()+"\t")
+                    }
+                    println()
+                }
+            }
+            println("\nHasil Perhitungan Nilai Vektor S")
+            val S : Array<Array<String?>> = Array(usaha!!.size,{ arrayOfNulls<String>(3)} )
+            var totalNilaiS:Double=0.0
+
+            for(i in 0 until usaha!!.size){
+                var S_temp :Double =0.0
+                S[i][0]="U"+(i+1).toString()
+                S[i][1]=usaha!![i].nama_usaha.toString()
+                if(preferensi[i][4]!= "0" ){
+                S_temp =
+                        (Math.pow((preferensi[i][2]!!.toDouble()),W1))*
+                        (Math.pow((preferensi[i][3]!!.toDouble()),W2))*
+                        (Math.pow((preferensi[i][4]!!.toDouble()),-W3))*
+                        (Math.pow((preferensi[i][5]!!.toDouble()),W4))*
+                        (Math.pow((preferensi[i][6]!!.toDouble()),-W5))
+                }
+                S[i][2]= df.format(S_temp)
+                totalNilaiS += S_temp
+                println("S${i+1} = ${S[i][2]}")
+            }
+
+            val V : Array<Array<String?>> = Array(usaha!!.size,{ arrayOfNulls<String>(3)} )
+
+            for(i in 0 until usaha!!.size){
+                V[i][0]="U"+(i+1).toString()
+                V[i][1]=usaha!![i].nama_usaha.toString()
+                V[i][2]=((S[i][2]!!.toDouble()/totalNilaiS)).toString()
+                println("V${i+1} = ${V[i][2]}")
+            }
+
+        }
+
+    }
+    class InputData (data : String, req : Int) {
+        init {
+            if (req == 1) {
+                tLokasi.add(data)
+            } else if (req == 2) {
+                pesaingUsaha.add(data)
+            }
+        }
+    }
 }
+
+
