@@ -466,12 +466,9 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 for(j in 0..6){
                     if(j==0){
                         preferensi[i][j]="U" + (i + 1).toString()
-                        print(preferensi[i][j].toString()+"\t")
                     }
                     else if(j==1){
                         preferensi[i][j]=usaha!![i].nama_usaha
-                        print(preferensi[i][j].toString()+"\t")
-
                     }
                     else if(j==2){
                         //nilai modal usaha(1/0) "1 = memenuhi" ; "0= tidak memenuhi"
@@ -479,7 +476,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                             preferensi[i][j]="1" }
                         else{
                             preferensi[i][j]="0" }
-                        print(preferensi[i][j].toString()+"\t")
                     }
                     else if(j==3){
                         //menghitung nilai jumlah target pasar
@@ -494,7 +490,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                             }
                         }
                         preferensi[i][j]= jlhTargetPasar.toString()
-                        print(preferensi[i][j].toString()+"\t")
                     }
                     else if(j==4){
                         //Menghitung Jarak Target Pasar
@@ -516,7 +511,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                             }
                         }
                         preferensi[i][j]= jarak.toString()
-                        print(preferensi[i][j].toString()+"\t")
                     }
                     else if(j==5){
                         val preferensiKepadatan : Array<String> = arrayOf("tidak padat",
@@ -539,10 +533,10 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                             val tmp = pesaingUsaha[a].split(",")
                             preferensi[i][j]=tmp[1]
                         }
-                        print(preferensi[i][j].toString()+"\t")
                     }
-                    println()
+                    print(preferensi[i][j].toString()+"\t")
                 }
+                println()
             }
             println("\nHasil Perhitungan Nilai Vektor S")
             val S : Array<Array<String?>> = Array(usaha!!.size,{ arrayOfNulls<String>(3)} )
@@ -560,7 +554,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         (Math.pow((preferensi[i][5]!!.toDouble()),W4))*
                         (Math.pow((preferensi[i][6]!!.toDouble()),-W5))
                 }
-                S[i][2]= df.format(S_temp)
+                S[i][2]= (S_temp).toString()
                 totalNilaiS += S_temp
                 println("S${i+1} = ${S[i][2]}")
             }
@@ -570,7 +564,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             for(i in 0 until usaha!!.size){
                 V[i][0]="U"+(i+1).toString()
                 V[i][1]=usaha!![i].nama_usaha.toString()
-                V[i][2]=((S[i][2]!!.toDouble()/totalNilaiS)).toString()
+                V[i][2]=(S[i][2]!!.toDouble()/totalNilaiS).toString()
                 println("V${i+1} = ${V[i][2]}")
             }
 
