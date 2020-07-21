@@ -1,14 +1,10 @@
 package com.example.myfristaop.peluangusaha
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
@@ -23,9 +19,9 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import com.example.myfristaop.peluangusaha.adapter.Tempat
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
+import com.example.myfristaop.peluangusaha.model.VektorV
 import com.example.myfristaop.peluangusaha.model.Wilayah
 import com.example.myfristaop.peluangusaha.preferences.UserPreferences
 import com.google.android.gms.common.api.Status
@@ -40,33 +36,20 @@ import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.compat.Place
 import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment
 import com.google.android.libraries.places.compat.ui.PlaceSelectionListener
-import com.loopj.android.http.AsyncHttpResponseHandler
-import com.loopj.android.http.SyncHttpClient
-import cz.msebera.android.httpclient.Header
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.activity_navigation.*
-import kotlinx.android.synthetic.main.activity_usaha_tersimpan.*
 import kotlinx.android.synthetic.main.app_bar_navigation.*
 import kotlinx.coroutines.*
-import org.jetbrains.anko.AnkoAsyncContext
+import kotlinx.coroutines.Dispatchers.IO
 import org.jetbrains.anko.doAsync
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 import java.text.DecimalFormat
 
-const val EXTRA_REKOMENDASI_USAHA ="EXTRA_REKOMENDASI_USAHA"
+
 open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private lateinit var nav: ActionBarDrawerToggle
@@ -84,6 +67,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
     lateinit var retrofit: Retrofit
     lateinit var peluangUsahaApi : PeluangUsahaApi
+    lateinit var wilayah: Wilayah
 
     val df : DecimalFormat = DecimalFormat("#.###") //Decimal Format
 
@@ -142,8 +126,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
         peluangUsahaApi = retrofit.create(PeluangUsahaApi::class.java)
-
-        ambilSemuaUsaha()
 
         //inisialisasi text autocomplate alamat
         txt_alamat = fragmentManager.findFragmentById(R.id.place_autocomplete_fragment) as PlaceAutocompleteFragment
@@ -243,6 +225,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         layoutMainToolbar.isClickable=false
                         layoutMainbawah.isClickable=false
                         layoutMap.isClickable=false
+
                         CariRekomendasiUsaha()
                     }
                     else{showToast("Lokasi yang ditetapkan harus berada di kawasan Kota Medan!") }
@@ -361,7 +344,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             val call : Call<Wilayah> =  peluangUsahaApi.getWilayah(kelurahan)
             call.enqueue(object : Callback<Wilayah> {
                 override fun onResponse(call: Call<Wilayah>, response: Response<Wilayah>) {
-                    var wilayah = response.body()
+                    wilayah = response.body()!!
                     kepadatan_penduduk_lokasi = wilayah?.kepadatan_penduduk!!.toDouble()
                     hitungKepadatan(kepadatan_penduduk_lokasi)
                 }
@@ -374,28 +357,34 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
     }
 
-    fun ambilSemuaUsaha() {
-        doAsync {
-            val token = userPreferences.token
-            val call : Call<List<UsahaResponse>> =  peluangUsahaApi.ambilSemuaUsaha(token)
-            call.enqueue(object : Callback<List<UsahaResponse>> {
-                override fun onResponse(call: Call<List<UsahaResponse>>, response: Response<List<UsahaResponse>>) {
-                    usaha = response.body()
-                    //gabungkan target pasar dari  masing masing usaha menjadi 1 variabel
-                    for(i in 0..((usaha!!.size)-1)){
-                        val tmp_targetpasar = usaha!![i].target_pasar.toLowerCase().trim().split(",")
-                        for(j in 0..((tmp_targetpasar.size)-1)){
-                            if(i==0){ cari_targetPasar.add(tmp_targetpasar[j].trim())}
-                            else if(cari_targetPasar.indexOf(tmp_targetpasar[j].trim()) == -1 ){
-                                cari_targetPasar.add(tmp_targetpasar[j].trim())
+     fun ambilSemuaUsaha() {
+
+         doAsync {
+             val token = userPreferences.token
+                val call : Call<List<UsahaResponse>> =  peluangUsahaApi.ambilSemuaUsaha(token)
+                call.enqueue(object : Callback<List<UsahaResponse>> {
+                    override fun onResponse(call: Call<List<UsahaResponse>>, response: Response<List<UsahaResponse>>) {
+                        usaha = response.body()
+                        //gabungkan target pasar dari  masing masing usaha menjadi 1 variabel
+                        for(i in 0..((usaha!!.size)-1)){
+                            val tmp_targetpasar = usaha!![i].target_pasar.toLowerCase().trim().split(",")
+                            for(j in 0..((tmp_targetpasar.size)-1)){
+                                if(i==0){ cari_targetPasar.add(tmp_targetpasar[j].trim())}
+                                else if(cari_targetPasar.indexOf(tmp_targetpasar[j].trim()) == -1 ){
+                                    cari_targetPasar.add(tmp_targetpasar[j].trim())
+                                }
                             }
                         }
+                        return
                     }
-                }
-                override fun onFailure(call: Call<List<UsahaResponse>>, t: Throwable) {
-                    Log.d("Semua usaha -----------", t.toString())
-                }
-            })
+                    override fun onFailure(call: Call<List<UsahaResponse>>, t: Throwable) {
+                        Log.d("Semua usaha -----------", t.toString())
+                    }
+                })
+
+
+
+
         }
     }
 
@@ -457,11 +446,10 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
         val modal : Int = txt_modal.text.toString().toInt()
         // Mengambil semua usaha
 
-        Log.d("Banyaknya Usaha : ", ""+usaha!!.size)
-        Log.d("Usaha --->> ", ""+usaha.toString())
-        Log.d("Target pasar semua usaha",""+cari_targetPasar.toString())
+
 
         CoroutineScope(Dispatchers.IO).launch {
+            ambilSemuaUsaha()
             ambilKepadatanPenduduk(kelurahan)
             Log.d("Kelurahan : ",kelurahan)
             println("Kepadatan penduduk = $tingkatKepadatanLokasi")
@@ -474,6 +462,10 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             for(i in 0..((usaha!!.size)-1)) {
                     ambil.Data(position, 1000, usaha!![i].nama_usaha, 2)  // 2 = request Pesaing
             }
+
+            Log.d("Banyaknya Usaha : ", ""+usaha!!.size)
+            Log.d("Usaha --->> ", ""+usaha.toString())
+            Log.d("Target pasar semua usaha",""+cari_targetPasar.toString())
             Log.d("Jumlah Pesaing pada lokasi",""+ pesaingUsaha.toString())
 
             //------Pembentukan Tabel 3.1.1.4 Nilai Preferensi Setiap Usaha--------
@@ -585,13 +577,17 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 totalNilaiS += S_temp
                 println("S${i+1} = ${S[i][2]}")
             }
-            val V : Array<Array<String?>> = Array(pesaingUsaha.size) { arrayOfNulls<String>(3)}
-
+//            val V : Array<Array<String?>> = Array(pesaingUsaha.size) { arrayOfNulls(3)}
+            var vektorV = arrayListOf<VektorV>()
             for(i in 0 until usaha!!.size){
-                V[i][0]="U${i+1}"
-                V[i][1]=usaha!![i].nama_usaha.toString()
-                V[i][2]=(S[i][2]!!.toDouble()/totalNilaiS).toString()
-                println("V${i+1} = ${V[i][2]}")
+//                V[i][0]="U${i+1}"
+//                V[i][1]=usaha!![i].id_usaha
+//                V[i][2]=(S[i][2]!!.toDouble()/totalNilaiS).toString()
+                val nilaiVektor = (S[i][2]!!.toDouble()/totalNilaiS).toString()
+                val idu = usaha!![i].id_usaha
+                var vektor = VektorV("U${i+1}",idu, nilaiVektor, usaha!![i])
+                vektorV.add(vektor)
+//                println("V${i+1} = ${V[i][2]}")
             }
             CoroutineScope(Dispatchers.Main).launch {
                 txt_prosesAnalisis.visibility= View.INVISIBLE
@@ -602,9 +598,10 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
                 val intent = Intent(this@MainActivity, RekomendasiUsaha::class.java)
 
-                intent.putExtra("HASIL_REKOMENDASI", V)
-                intent.putExtra("DATA_USAHA", "")
-
+                intent.putExtra("VEKTOR_V", vektorV)
+                intent.putExtra("LATITUDE", position.latitude)
+                intent.putExtra("LONGITUDE", position.longitude)
+                intent.putExtra("ID_WILAYAH", wilayah.id_wilayah)
                 startActivity(intent)
 
             }

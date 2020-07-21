@@ -25,4 +25,9 @@ interface PeluangUsahaApi {
     @DELETE("usaha/hapusUsahaTersimpanById/{id_usaha}")
     fun hapusUsahaTersimpan(@Header ("token") token: String, @Path("id_usaha") id_usaha: String): Call<Void>
 
+    @POST("usaha/simpanUsaha")
+    fun simpanUsaha(@Header("token") token: String, @Body usahaTersimpan: UsahaTersimpan): Call<Void>
+
+    @POST("usaha/hapusUsahaTersimpan")
+    fun hapusUsahaTersimpanByUser(@Header("token") token: String, @Body usahaTersimpan: UsahaTersimpan): Call<Void>
 }

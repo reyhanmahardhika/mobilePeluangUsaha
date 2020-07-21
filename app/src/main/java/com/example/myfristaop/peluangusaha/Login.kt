@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
+import android.view.View
 
 import android.widget.Toast
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
@@ -54,12 +55,17 @@ class Login : AppCompatActivity(){
             val call =  peluangUsahaApi.login(user)
             call.enqueue(object : Callback<UserResponse> {
                 override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                    val userResponse = response.body()
-                    userPreferences.id = userResponse?.id_pengguna ?: ""
-                    userPreferences.nama = userResponse?.nama_pengguna ?: ""
-                    userPreferences.email = userResponse?.email ?: ""
-                    userPreferences.token = userResponse?.token ?: ""
-                    this@Login.finish()
+                    if(response.code() == 200) {
+                        val userResponse = response.body()
+                        userPreferences.id = userResponse?.id_pengguna ?: ""
+                        userPreferences.nama = userResponse?.nama_pengguna ?: ""
+                        userPreferences.email = userResponse?.email ?: ""
+                        userPreferences.token = userResponse?.token ?: ""
+                        this@Login.finish()
+                    } else{
+                        txtAlertLogin.text = "Email atau password yang anda masukkan tidak benar"
+                        txtAlertLogin.visibility = View.VISIBLE
+                    }
                 }
 
                 override fun onFailure(call: Call<UserResponse>, t: Throwable) {

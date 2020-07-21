@@ -20,11 +20,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".DetailRekomendasiUsahaActivity"></activity>
         <activity
             android:name=".DetailUsahaTersimpanActivity"
             android:label="Detail Usaha Tersimpan"
             android:parentActivityName=".UsahaTersimpanActivity"
-            android:theme="@style/AppThemeWithActionbar"/>
+            android:theme="@style/AppThemeWithActionbar" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -38,6 +39,7 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -45,7 +47,6 @@
             android:name=".Login"
             android:theme="@style/AppTheme" />
         <activity android:name=".RegisterActivity" />
-
         <activity
             android:name=".UsahaTersimpanActivity"
             android:label="Usaha Tersimpan"
@@ -56,14 +57,11 @@
             android:label="Akun"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppThemeWithActionbar" />
-
-        <activity android:name=".RekomendasiUsaha"/>
-
+        <activity android:name=".RekomendasiUsaha" />
         <activity
             android:name=".Ambil"
             android:label="Ambil Data"
-            android:parentActivityName=".MainActivity"/>
-
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

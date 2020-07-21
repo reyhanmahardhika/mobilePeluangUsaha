@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailRekomendasiUsahaActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@color/bgLight"
+                android:layout_marginBottom="5dp"
+                android:maxHeight="200dp" />
+            <TextView
+                android:id="@+id/txtNamaDetailRekomendasiUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8pt"
+                android:maxLines="1"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"
+                android:text=""/>
+            <TextView
+                android:id="@+id/txtModalDetailRekomendasiUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:maxLines="1"
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent"
+                android:text="Modal: Rp.120000"/>
+            <TextView
+                android:id="@+id/txtJenisDetailRekomendasiUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:maxLines="1"
+                android:layout_marginBottom="10dp"
+                android:text="Jenis Usaha: Kuliner"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/colorBlack"
+                android:text="Hasil Analisis Lokasi"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/bgLight">
+                <TextView
+                    android:id="@+id/labelDataTargetPasarRekomendasiUsaha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/colorBlack"
+                    android:text="Daftar Target pasar"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="50dp"
+                    android:layout_marginBottom="10dp">
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rvTargetPasarRekomendasiUsaha"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        tools:listitem="@layout/item_target_dan_pesaing_list"
+                        android:padding="8dp">
+                    </android.support.v7.widget.RecyclerView>
+                    <ProgressBar
+                        android:id="@+id/pbTargetDetailRekomendasiUsaha"
+                        android:layout_width="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_height="wrap_content"/>
+                    <Button
+                        android:id="@+id/btnTampilkanTargetRekomendasiUsahaDalamPeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/rvTargetPasarRekomendasiUsaha"
+                        android:backgroundTint="@color/colorAccent"
+                        android:textSize="5pt"
+                        android:layout_marginLeft="5dp"
+                        android:visibility="gone"
+                        android:textColor="@color/colorWhite"
+                        android:text="Lihat dalam peta"/>
+                </RelativeLayout>
+                <TextView
+                    android:id="@+id/labelDataPesaingDetailRekomendasiUsaha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="7pt"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/colorBlack"
+                    android:text="Daftar Pesaing"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="50dp"
+                    >
+                    <TextView
+                        android:id="@+id/txtTidakAdaPesaingDetailRekomendasiUsaha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="invisible"
+                        android:padding="8dp"
+                        android:text="Pesaing dengan jenis usah yang sama tidak ditemukan."/>
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rvPesaingRekomendasiUsaha"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        tools:listitem="@layout/item_target_dan_pesaing_list"
+                        android:padding="8dp">
+                    </android.support.v7.widget.RecyclerView>
+                    <ProgressBar
+                        android:id="@+id/pbPesaingDetailUsaha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"/>
+                    <Button
+                        android:id="@+id/btnTampilkanPesaingRekomendasiUsahaDalamPeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/rvPesaingRekomendasiUsaha"
+                        android:backgroundTint="@color/colorAccent"
+                        android:textSize="5pt"
+                        android:layout_marginLeft="5dp"
+                        android:visibility="gone"
+                        android:textColor="@color/colorWhite"
+                        android:text="Lihat dalam peta"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorBlack"
+                android:text="Deskripsi Usaha"/>
+            <TextView
+                android:id="@+id/txtDeskripsiDetailRekomendasiUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:text="Kalimat deskripsi usaha"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorBlack"
+                android:text="Bahan Baku"/>
+            <TextView
+                android:id="@+id/txtBahanBakuDetailRekomendasiUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="7pt"
+                android:text="Bahan Baku"/>
+        </LinearLayout>
+    </ScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabHapusDetailRekomendasiUsaha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignParentBottom="true"
+
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_delete_black_24dp"/>
+
+
+</RelativeLayout>

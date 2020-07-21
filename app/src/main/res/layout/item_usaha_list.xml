@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="70dp">
         <ImageView
-            android:id="@+id/imgUsahaTersimpan"
+            android:id="@+id/imgUsaha"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
@@ -26,11 +26,11 @@
             android:orientation="vertical"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_toRightOf="@+id/imgUsahaTersimpan"
+            android:layout_toRightOf="@+id/imgUsaha"
             android:layout_toLeftOf="@id/imgHapusItemUsahaTersimpan"
             android:layout_centerVertical="true">
             <TextView
-                android:id="@+id/txtNamaUsahaTersimpan"
+                android:id="@+id/txtNamaUsaha"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/TextAppearance.Compat.Notification.Title"
@@ -40,7 +40,7 @@
                 android:maxLines="1"
                 android:text="12389fads sfa djkl sdfalkj sadfk jjlk"/>
             <TextView
-                android:id="@+id/txtModalUsahaTersimpan"
+                android:id="@+id/txtModalUsaha"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"

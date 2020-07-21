@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import com.example.myfristaop.peluangusaha.R
 import com.example.myfristaop.peluangusaha.model.UsahaTersimpanResponse
@@ -18,7 +17,7 @@ class UsahaTersimpanAdapter(private val listUsaha : ArrayList<UsahaTersimpanResp
         this.onItemClickListener = onItemClickListener
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_usaha_tersimpan_list, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_usaha_list, parent, false)
         return ViewHolder(view)
     }
 
@@ -34,9 +33,9 @@ class UsahaTersimpanAdapter(private val listUsaha : ArrayList<UsahaTersimpanResp
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsahaTersimpan)
+        val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsaha)
 //        val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
-        val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsahaTersimpan)
+        val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsaha)
     }
 
     interface OnItemClickListener {
