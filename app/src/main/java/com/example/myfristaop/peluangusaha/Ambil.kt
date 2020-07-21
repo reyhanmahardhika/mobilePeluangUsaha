@@ -26,8 +26,6 @@ class Ambil :MainActivity(){
 
         withContext(Dispatchers.IO) {
             async {
-                var jarakTerdekat =0
-                var jarak  = 0
                 var jumlah = 0
                 val client = SyncHttpClient()
                 val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=$radius&name=$kataKunci&key=${BuildConfig.MAP_KEY}"
@@ -39,6 +37,8 @@ class Ambil :MainActivity(){
                             val hasil = JSONObject(responseBody.toString(charset))
                             val res: JSONArray? = hasil.getJSONArray("results")
                             if (res != null) {
+                                var jarakTerdekat = 10000
+                                var jarakSebelumnya : Int
                                 for (i in 0 until res.length()) {
                                     try {
                                         val oneObject: JSONObject = res.getJSONObject(i)
@@ -52,27 +52,25 @@ class Ambil :MainActivity(){
                                         lokasiUsaha.latitude = pos.latitude
                                         lokasiUsaha.longitude = pos.longitude
 
-                                        jarak = lokasiUsaha.distanceTo(lokasiTarget).toInt()
-                                        if(jarak <= 1000) {
+                                        jarakSebelumnya = lokasiUsaha.distanceTo(lokasiTarget).toInt()
+                                        println("jarak sebelumnya : $jarakSebelumnya  XX jarak tersekat : $jarakTerdekat")
+                                        if(jarakSebelumnya <= 1000) {
                                             jumlah+=1
-                                            if(i==0){jarakTerdekat = jarak}
-                                            else{
-                                                if(jarak<jarakTerdekat)
-                                                {jarakTerdekat=jarak}}
+                                           if(jarakSebelumnya<jarakTerdekat)
+                                                {jarakTerdekat=jarakSebelumnya}
                                         }
                                     } catch (e: JSONException) {
                                         break }
                                 }
-
+                                if(req ==1) {
+                                    val data : String = ("$kataKunci,$jumlah,$jarakTerdekat")
+                                    InputData(data,req)
+                                }
+                                else if(req==2){
+                                    val data:String =("$kataKunci,$jumlah")
+                                    InputData(data,req)
+                                }
                             }
-                        }
-                        if(req ==1) {
-                            val data : String = ("$kataKunci,$jumlah,$jarakTerdekat")
-                            InputData(data,req)
-                        }
-                        else if(req==2){
-                            val data:String =("$kataKunci,$jumlah")
-                            InputData(data,req)
                         }
                     }
                     override fun onFailure(statusCode: Int, headers: Array<out Header>?, responseBody: ByteArray?, error: Throwable?) {

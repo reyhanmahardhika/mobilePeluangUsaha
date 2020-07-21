@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.example.myfristaop.peluangusaha.MainActivity.Companion.V
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
 import com.example.myfristaop.peluangusaha.model.UsahaTersimpanResponse
@@ -55,16 +54,14 @@ class RekomendasiUsaha : AppCompatActivity(){
       }
     }
     ambilSemuaUsaha()
+    //sebelumnya dilakukan proses pengurutan dari hasil vektor v
+    //jika hasil dari vektor v != 0 maka usaha tersebut d tampilkan,
+    // jika jumlah vektor v yang !=0 lebih dari 10 maka usaha yang d tampilkan hanya 10 teratas
 
-    for(i in 0..main.V.size) {//atur jumlah usaha
-      for(j in 0 until usaha!!.size){
-        if(V[i][1]==usaha!![i].nama_usaha){
-          
-        }
-      }
+    for(i in 0..10) {//atur jumlah usaha
 
       var view: View = LayoutInflater.from(this).inflate(R.layout.fragment_usaha, null)
-      view.nama_usaha.setText("${V[i][1]}")
+      view.nama_usaha.setText("nama usaha}")
       view.usaha.setOnClickListener{
         Toast.makeText(this, " Nama Usaha "+i.toString(), Toast.LENGTH_SHORT).show()
         //detail usaha
