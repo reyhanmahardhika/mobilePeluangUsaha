@@ -8,7 +8,7 @@ import retrofit2.http.*
 interface PeluangUsahaApi {
 
     @GET("wilayah/ambilSatuWilayah")
-    fun getWilayah(@Query("kelurahan") kelurahan:String) : Call<Wilayah>
+    fun getWilayah(@Query("kelurahan") kelurahan:String ) : Call<Wilayah>
 
     @POST("auth/login")
     fun login(@Body user: User) : Call<UserResponse>

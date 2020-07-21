@@ -3,6 +3,7 @@ package com.example.myfristaop.peluangusaha
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
@@ -13,6 +14,7 @@ import com.example.myfristaop.peluangusaha.model.UsahaResponse
 import com.example.myfristaop.peluangusaha.model.UsahaTersimpanResponse
 import com.example.myfristaop.peluangusaha.preferences.UserPreferences
 import kotlinx.android.synthetic.main.activity_usaha_tersimpan.*
+import kotlinx.android.synthetic.main.item_usaha_tersimpan_list.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import retrofit2.Call
@@ -66,6 +68,22 @@ class UsahaTersimpanActivity : AppCompatActivity() {
             })
         }
     }
+    private fun hapusUsahaTersimpan(id: String) {
+        doAsync {
+            val token = userPreferences.token
+            var call  =  peluangUsahaApi.hapusUsahaTersimpan(token, id)
+            call.enqueue(object: Callback<Void> {
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Log.e("hapus usaha", "failed: " + t)
+                }
+
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    Toast.makeText(this@UsahaTersimpanActivity,  "Usaha telah terhapus.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            })
+        }
+    }
 
     private fun showRvUsahTersimpan (list: List<UsahaTersimpanResponse>) {
         rvUsahaTersimpan.layoutManager = LinearLayoutManager(this)
@@ -75,7 +93,7 @@ class UsahaTersimpanActivity : AppCompatActivity() {
 
         adapter.setOnClickListener(object : UsahaTersimpanAdapter.OnItemClickListener {
             override fun onClickItem(usaha: UsahaTersimpanResponse) {
-                var intent = Intent(this@UsahaTersimpanActivity, DetailUsahaTersimpanActivity::class.java)
+                val intent = Intent(this@UsahaTersimpanActivity, DetailUsahaTersimpanActivity::class.java)
                 intent.putExtra(EXTRA_USAHA_TERSIMPAN, usaha)
                 startActivity(intent)
             }

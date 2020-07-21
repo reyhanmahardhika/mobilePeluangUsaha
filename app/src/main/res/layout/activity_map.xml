@@ -5,14 +5,20 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
+    <RelativeLayout
+        android:id="@+id/layoutMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <fragment
+            android:id="@+id/map"
+            class="com.google.android.gms.maps.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
 
-    <fragment
-        android:id="@+id/map"
-        class="com.google.android.gms.maps.MapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <android.support.v7.widget.CardView
+        android:id="@+id/layoutMainToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/shadow"
@@ -38,33 +44,61 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
+        android:id="@+id/layoutMainbawah"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:background="@drawable/shadow">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="55dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Modal : Rp "
+                android:textSize="15sp" />
+
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/txt_modal"
-                android:layout_width="260dp"
+                android:layout_width="170dp"
                 android:layout_height="45dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginStart="5dp"
-                android:inputType="text"
-                android:textSize="17sp"
-                android:hint="Modal yang Anda miliki (Rp)" />
+                android:hint="Modal yang Anda miliki (Rp)"
+                android:inputType="number"
+                android:textSize="16sp" />
+
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btn_cari"
                 android:layout_width="80dp"
                 android:layout_height="45dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginStart="5dp"
-                android:textColor="#fff"
                 android:background="@drawable/rounded"
-                android:textStyle="bold"
-                android:text="Cari" />
+                android:text="Cari"
+                android:textColor="#fff"
+                android:textStyle="bold" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
+    <ProgressBar
+        android:id="@+id/pbPerhitunganAlgoritma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        />
+    <TextView
+        android:id="@+id/txt_prosesAnalisis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="320dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="25sp"
+        android:visibility="invisible"
+        android:text="Sedang Menganalisis Lokasi..."/>
 </RelativeLayout>
