@@ -189,19 +189,8 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     //digunakan untuk mengambil url untuk menjalankan place API by nearby search
     private fun getUrl(position : LatLng, kataKunci: String, radius: Double): String {
-        var googlePlacesUrl=""
-        try {
-                googlePlacesUrl = ("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                        position.latitude + "," +
-                        position.longitude + "&radius=" +
-                        radius + "&name=Masjid&sensor=true&key=AIzaSyBeNiSKscMn5k2Ymh0FKA6Ubmt7weTjVMU")
-                Log.d("getUrl", googlePlacesUrl)
-                android.widget.Toast.makeText(applicationContext, "Google PlaceURL berhasil dimuat ", android.widget.Toast.LENGTH_LONG).show()
-        }
-        catch(e:Exception){
-            android.widget.Toast.makeText(applicationContext, "Google PlaceURL gagal dimuat!! ", android.widget.Toast.LENGTH_LONG).show()
-        }
-        return (googlePlacesUrl)
+        var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${position.latitude},${position.longitude}&radius=${radius}&name=${kataKunci}&key=${BuildConfig.MAP_KEY}"
+        return (url)
     }
 
     private class new_PlaceTask(mMap: GoogleMap) : AsyncTask<String, Int, String>() {
@@ -242,7 +231,6 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             //get append data
             val data : String = builder.toString()
             reader.close()
-
             return  data
         }
 
