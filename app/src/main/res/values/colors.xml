@@ -6,5 +6,7 @@
     <color name="colorWhite">#FAFAFA</color>
     <color name="bgLight">#F1F1F1</color>
     <color name="colorBlack">#353535</color>
+    <color name="colorTransparan">#00ffffff</color>
+    <color name="bgProses">#4dffffff</color>
 
 </resources>

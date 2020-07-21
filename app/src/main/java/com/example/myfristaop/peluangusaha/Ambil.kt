@@ -23,10 +23,10 @@ import java.util.*
 
 class Ambil :MainActivity(){
     suspend fun Data(pos: LatLng, radius: Int, kataKunci: String,req : Int) {
-        var jarakTerdekat =0
 
         withContext(Dispatchers.IO) {
             async {
+                var jarakTerdekat =0
                 var jarak  = 0
                 var jumlah = 0
                 val client = SyncHttpClient()
@@ -54,10 +54,11 @@ class Ambil :MainActivity(){
 
                                         jarak = lokasiUsaha.distanceTo(lokasiTarget).toInt()
                                         if(jarak <= 1000) {
-                                            println("jarak : $jarak,, jarak terdekat : $jarakTerdekat")
                                             jumlah+=1
                                             if(i==0){jarakTerdekat = jarak}
-                                            else if(jarak<jarakTerdekat){jarakTerdekat=jarak}
+                                            else{
+                                                if(jarak<jarakTerdekat)
+                                                {jarakTerdekat=jarak}}
                                         }
                                     } catch (e: JSONException) {
                                         break }

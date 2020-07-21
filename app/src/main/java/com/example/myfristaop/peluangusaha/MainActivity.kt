@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.AsyncTask
@@ -20,6 +21,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.example.myfristaop.peluangusaha.adapter.Tempat
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
@@ -33,10 +35,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.Circle
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.compat.Place
 import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment
@@ -46,6 +45,7 @@ import com.loopj.android.http.SyncHttpClient
 import cz.msebera.android.httpclient.Header
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.activity_navigation.*
+import kotlinx.android.synthetic.main.activity_usaha_tersimpan.*
 import kotlinx.android.synthetic.main.app_bar_navigation.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.AnkoAsyncContext
@@ -66,7 +66,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.DecimalFormat
 
-
+const val EXTRA_REKOMENDASI_USAHA ="EXTRA_REKOMENDASI_USAHA"
 open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private lateinit var nav: ActionBarDrawerToggle
@@ -98,9 +98,12 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     var tingkatKepadatanLokasi : String = "tidak padat"
 
     var cari_targetPasar : MutableList<String> = mutableListOf()
+    var daftarUsaha : MutableList<String> = mutableListOf()
+
     companion object {
         var tLokasi : MutableList<String> = mutableListOf()
         var pesaingUsaha : MutableList<String> = mutableListOf()
+        val V : Array<Array<String?>> = Array(pesaingUsaha.size,{ arrayOfNulls<String>(3)} )
     }
 
     var kepadatan_penduduk_lokasi : Double = 0.0
@@ -121,6 +124,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     var W3 : Double = (bobot3/(bobot1+bobot2+bobot3+bobot4+bobot5))
     var W4 : Double = (bobot4/(bobot1+bobot2+bobot3+bobot4+bobot5))
     var W5 : Double = (bobot5/(bobot1+bobot2+bobot3+bobot4+bobot5))
+
     //---------------------------------------------------------------------------------
 
 
@@ -140,7 +144,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 .build()
         peluangUsahaApi = retrofit.create(PeluangUsahaApi::class.java)
 
-        // Mengambil semua usaha
         ambilSemuaUsaha()
 
         //inisialisasi text autocomplate alamat
@@ -221,6 +224,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             txt_alamat.setText(null)
             fab_myLocation.background.setTint(resources.getColor(R.color.colorWhite))
         }
+        txt_alamat.input.textSize=17.toFloat()
 
         txt_alamat.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
@@ -231,12 +235,13 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 Log.d("error","Map gagal dimuat")
             }
         })
-        
+
         btn_cari.setOnClickListener {
             if(position!=LatLng(0.0,0.0)) {
                 if(txt_modal.text.toString()!=""){
                     if(kota == "Kota Medan"){
-                            CariRekomendasiUsaha()
+                        txt_modal.clearFocus()
+                        CariRekomendasiUsaha()
                     }
                     else{showToast("Lokasi yang ditetapkan harus berada di kawasan Kota Medan!") }
                 }
@@ -254,12 +259,14 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     private fun addMarker(latLng: LatLng, txt_alamat: PlaceAutocompleteFragment) {
         try {
             mMap.clear()
+            val icon = BitmapDescriptorFactory.fromResource(R.drawable.small_business_38px)
             val marker = mMap.addMarker(MarkerOptions()
                     .position(latLng).draggable(true).title("Lokasi Usaha Anda"))
             getAddress(position,txt_alamat)
+            marker.setIcon(icon)
             marker.showInfoWindow()
             marker.isDraggable = false
-            val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(1000.0))
+            val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(1000.0).strokeWidth(2f))
 
             val zoom = mMap.cameraPosition.zoom.toDouble()
             if (zoom < 14.7) {
@@ -267,6 +274,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             } else {
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(position))
             }
+            showToast("Anda dapat zoom dan klik peta untuk menyesuai lokasi usaha Anda")
 
         }catch(e:Exception){Log.d("Error",e.toString())}
     }
@@ -302,7 +310,9 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
+
         when (item.itemId) {
+
             R.id.edit_profile -> {
                 startActivity(Intent(this, ProfilActivity::class.java))
             }
@@ -433,24 +443,36 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
     }
 
-    @SuppressLint("LongLogTag")
+    @SuppressLint("LongLogTag", "ResourceAsColor")
     fun CariRekomendasiUsaha(){
+
+        txt_prosesAnalisis.visibility= View.VISIBLE
+        pbPerhitunganAlgoritma.visibility = View.VISIBLE
+        layoutMainToolbar.isEnabled=false
+        layoutMainbawah.isEnabled=false
+        layoutMap.isEnabled=false
+
         val ambil :Ambil = Ambil()
         val modal : Int = txt_modal.text.toString().toInt()
-        Log.d("Kelurahan : ",kelurahan)
-        ambilKepadatanPenduduk(kelurahan)
+        // Mengambil semua usaha
+
         Log.d("Banyaknya Usaha : ", ""+usaha!!.size)
         Log.d("Usaha --->> ", ""+usaha.toString())
         Log.d("Target pasar semua usaha",""+cari_targetPasar.toString())
 
-        CoroutineScope(Dispatchers.IO).launch{
+        CoroutineScope(Dispatchers.IO).launch {
+            ambilKepadatanPenduduk(kelurahan)
+            Log.d("Kelurahan : ",kelurahan)
+            println("Kepadatan penduduk = $tingkatKepadatanLokasi")
+
             for(i in 0..((cari_targetPasar.size)-1)){ //mencari data target pasar
                     ambil.Data(position,1000,cari_targetPasar[i],1) }
             Log.d("Target pasar lokasi",""+tLokasi.toString())
 
 
-            for(i in 0..((usaha!!.size)-1)){
-                ambil.Data(position,1000,usaha!![i].nama_usaha,2)} // 2 = request Pesaing
+            for(i in 0..((usaha!!.size)-1)) {
+                    ambil.Data(position, 1000, usaha!![i].nama_usaha, 2)  // 2 = request Pesaing
+            }
             Log.d("Jumlah Pesaing pada lokasi",""+ pesaingUsaha.toString())
 
             //------Pembentukan Tabel 3.1.1.4 Nilai Preferensi Setiap Usaha--------
@@ -458,7 +480,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
             println("\nTabel Nilai Preferensi Kriteria : ")
             println("\nAlternatif\tC1\tC2\tC3\tC4\tC5")
-            for(i in 0 until usaha!!.size){
+            for(i in 0..((usaha!!.size)-1)){
                 var jlhTargetPasar = 0
 
                 for(j in 0..6){
@@ -478,7 +500,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                     else if(j==3){
                         //menghitung nilai jumlah target pasar
                         for(a in 0 until cari_targetPasar.size){
-                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(",")
+                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(", ")
                             val tmp = tLokasi[a].split(",")
                             for(b in 0 until targetpasar_usaha.size) {
                                 if(tmp[0]==targetpasar_usaha[b]){
@@ -494,7 +516,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         var jarak = 0
 
                         for(a in 0 until cari_targetPasar.size){
-                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(",")
+                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(", ")
                             val tmp = tLokasi[a].split(",")
                             for(b in 0 until targetpasar_usaha.size) {
                                 if(tmp[0]==targetpasar_usaha[b]){
@@ -517,7 +539,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         var sepi = 5
                         for(a in 0 until preferensiKepadatan.size){
                             if(tingkatKepadatanLokasi==preferensiKepadatan[a]){
-                                if(usaha!![i].jenis_usaha.toString()=="1"){
+                                if(usaha!![i].kepadatan_penduduk.toString()=="1"){
                                     preferensi[i][j]=ramai.toString() }
                                 else{
                                     preferensi[i][j]=sepi.toString() }
@@ -527,7 +549,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         }
                     }
                     else if(j==6){
-                        for(a in 0 until pesaingUsaha.size){
+                        for(a in 0 until usaha!!.size){
                             val tmp = pesaingUsaha[a].split(",")
                             preferensi[i][j]=tmp[1]
                         }
@@ -537,7 +559,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 println()
             }
             println("\nHasil Perhitungan Nilai Vektor S")
-            val S : Array<Array<String?>> = Array(usaha!!.size,{ arrayOfNulls<String>(3)} )
+            val S : Array<Array<String?>> = Array(pesaingUsaha.size,{ arrayOfNulls<String>(3)} )
             var totalNilaiS:Double=0.0
 
             for(i in 0 until usaha!!.size){
@@ -557,7 +579,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 println("S${i+1} = ${S[i][2]}")
             }
 
-            val V : Array<Array<String?>> = Array(usaha!!.size,{ arrayOfNulls<String>(3)} )
 
             for(i in 0 until usaha!!.size){
                 V[i][0]="U"+(i+1).toString()
@@ -565,7 +586,16 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 V[i][2]=(S[i][2]!!.toDouble()/totalNilaiS).toString()
                 println("V${i+1} = ${V[i][2]}")
             }
+            CoroutineScope(Dispatchers.Main).launch {
+                txt_prosesAnalisis.visibility= View.INVISIBLE
+                pbPerhitunganAlgoritma.visibility = View.INVISIBLE
+                layoutMainToolbar.isClickable=true
+                layoutMainbawah.isClickable=true
+                layoutMap.isClickable=true
 
+                val intent = Intent(this@MainActivity, DetailUsahaTersimpanActivity::class.java)
+                startActivity(intent)
+            }
         }
 
     }

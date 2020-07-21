@@ -122,12 +122,12 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
 
         mMapView.getMapAsync {googleMap ->
             val lokasiUsahaAnda = LatLng(lokasiUsaha.latitude, lokasiUsaha.longitude)
-            val icon = BitmapDescriptorFactory.fromResource(R.drawable.small_business_38px);
+            val icon = BitmapDescriptorFactory.fromResource(R.drawable.small_business_38px)
             val markerLokasiUsahaAnda = googleMap.addMarker(MarkerOptions().position(lokasiUsahaAnda).title("Lokasi Usaha Anda"))
             markerLokasiUsahaAnda.setIcon(icon)
             markerLokasiUsahaAnda.isDraggable = false
             markerLokasiUsahaAnda.showInfoWindow()
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lokasiUsahaAnda, 13.0f))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lokasiUsahaAnda, 14.7f))
             googleMap.addCircle(CircleOptions().center(lokasiUsahaAnda).radius(1000.0).strokeWidth(2f))
 
             for(tempat in listTempat) {
