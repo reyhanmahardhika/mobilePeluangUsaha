@@ -103,7 +103,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     companion object {
         var tLokasi : MutableList<String> = mutableListOf()
         var pesaingUsaha : MutableList<String> = mutableListOf()
-        val V : Array<Array<String?>> = Array(pesaingUsaha.size,{ arrayOfNulls<String>(3)} )
     }
 
     var kepadatan_penduduk_lokasi : Double = 0.0
@@ -241,6 +240,9 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 if(txt_modal.text.toString()!=""){
                     if(kota == "Kota Medan"){
                         txt_modal.clearFocus()
+                        layoutMainToolbar.isClickable=false
+                        layoutMainbawah.isClickable=false
+                        layoutMap.isClickable=false
                         CariRekomendasiUsaha()
                     }
                     else{showToast("Lokasi yang ditetapkan harus berada di kawasan Kota Medan!") }
@@ -381,11 +383,11 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                     usaha = response.body()
                     //gabungkan target pasar dari  masing masing usaha menjadi 1 variabel
                     for(i in 0..((usaha!!.size)-1)){
-                        val tmp_targetpasar = usaha!![i].target_pasar.toLowerCase().split(", ")
+                        val tmp_targetpasar = usaha!![i].target_pasar.toLowerCase().trim().split(",")
                         for(j in 0..((tmp_targetpasar.size)-1)){
-                            if(i==0){ cari_targetPasar.add(tmp_targetpasar[j])}
-                            else if(cari_targetPasar.indexOf(tmp_targetpasar[j]) == -1 ){
-                                cari_targetPasar.add(tmp_targetpasar[j])
+                            if(i==0){ cari_targetPasar.add(tmp_targetpasar[j].trim())}
+                            else if(cari_targetPasar.indexOf(tmp_targetpasar[j].trim()) == -1 ){
+                                cari_targetPasar.add(tmp_targetpasar[j].trim())
                             }
                         }
                     }
@@ -498,8 +500,8 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                     }
                     else if(j==3){
                         //menghitung nilai jumlah target pasar
-                        for(a in 0 until cari_targetPasar.size){
-                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(", ")
+                        for(a in 0 until tLokasi.size){
+                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().trim().split(",")
                             val tmp = tLokasi[a].split(",")
                             for(b in 0 until targetpasar_usaha.size) {
                                 if(tmp[0]==targetpasar_usaha[b]){
@@ -514,8 +516,8 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         //Menghitung Jarak Target Pasar
                         var jarak = 0
 
-                        for(a in 0 until cari_targetPasar.size){
-                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().split(", ")
+                        for(a in 0 until tLokasi.size){
+                            val targetpasar_usaha = usaha!![i].target_pasar.toLowerCase().trim().split(",")
                             val tmp = tLokasi[a].split(",")
                             for(b in 0 until targetpasar_usaha.size) {
                                 if(tmp[0]==targetpasar_usaha[b]){
@@ -548,10 +550,15 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         }
                     }
                     else if(j==6){
-                        for(a in 0 until usaha!!.size){
+                        var pesaing =1
+                        for(a in 0 until pesaingUsaha.size) {
                             val tmp = pesaingUsaha[a].split(",")
-                            preferensi[i][j]=tmp[1]
+                            if (usaha!![i].nama_usaha == tmp[0]) {
+                                pesaing = (tmp[1].toInt())+1
+                                break
+                            }
                         }
+                        preferensi[i][j] = pesaing.toString()
                     }
                     print(preferensi[i][j].toString()+"\t")
                 }
@@ -573,11 +580,12 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                         (Math.pow((preferensi[i][5]!!.toDouble()),W4))*
                         (Math.pow((preferensi[i][6]!!.toDouble()),-W5))
                 }
+                else{S_temp = 0.0}
                 S[i][2]= (S_temp).toString()
                 totalNilaiS += S_temp
                 println("S${i+1} = ${S[i][2]}")
             }
-
+            val V : Array<Array<String?>> = Array(pesaingUsaha.size) { arrayOfNulls<String>(3)}
 
             for(i in 0 until usaha!!.size){
                 V[i][0]="U${i+1}"
@@ -593,8 +601,10 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 layoutMap.isClickable=true
 
                 val intent = Intent(this@MainActivity, RekomendasiUsaha::class.java)
+
                 intent.putExtra("HASIL_REKOMENDASI", V)
                 intent.putExtra("DATA_USAHA", "")
+
                 startActivity(intent)
 
             }
