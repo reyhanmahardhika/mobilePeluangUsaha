@@ -33,6 +33,20 @@ class Login : AppCompatActivity(){
         setContentView(R.layout.activity_login)
         userPreferences = UserPreferences(this, prefFileName)
 
+        // Check apakah user sudah login (data user ada di userPreferences)
+        fun checkLogin() {
+            if(userPreferences.token == ""){
+                Toast.makeText(applicationContext, "Anda Belum Login", Toast.LENGTH_LONG).show()
+            }
+            else {
+                this@Login.finish()
+                startActivity(Intent(this@Login, MainActivity::class.java))}
+
+        }
+        // Sebelum lanjut cek apakah user sudah login
+        checkLogin()
+
+
         val retrofit: Retrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -55,6 +69,7 @@ class Login : AppCompatActivity(){
             val call =  peluangUsahaApi.login(user)
             call.enqueue(object : Callback<UserResponse> {
                 override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                    
                     if(response.code() == 200) {
                         val userResponse = response.body()
                         userPreferences.id = userResponse?.id_pengguna ?: ""
@@ -103,4 +118,5 @@ class Login : AppCompatActivity(){
                 .setNegativeButton("Tidak") { dialog, _ ->  dialog.cancel()}
         builder.show()
     }
+
 }

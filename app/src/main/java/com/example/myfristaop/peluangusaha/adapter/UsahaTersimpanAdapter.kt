@@ -27,12 +27,14 @@ class UsahaTersimpanAdapter(private val listUsaha : ArrayList<UsahaTersimpanResp
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 //        Glide.with(holder.itemView.context).load(listPlace[position].photo).apply(RequestOptions().override(350, 550)).into(holder.destinationPhoto)
+        holder.nomorUsaha.text = (position+1).toString()
         holder.namaUsaha.text = listUsaha[position].nama_usaha
         holder.modalUsaha.text = ("Modal : Rp${listUsaha[position].modal}")
         holder.itemView.setOnClickListener { onItemClickListener.onClickItem(listUsaha[position]) }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val nomorUsaha : TextView= itemView.findViewById(R.id.nomorUsaha)
         val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsaha)
 //        val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
         val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsaha)

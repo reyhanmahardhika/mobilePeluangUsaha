@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import com.example.myfristaop.peluangusaha.R
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
@@ -27,14 +28,19 @@ class RekomendasiUsahaAdapter (private val listVektor: List<VektorV>): RecyclerV
 
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         ////        Glide.with(holder.itemView.context).load(listPlace[position].photo).apply(RequestOptions().override(350, 550)).into(holder.destinationPhoto)
+        p0.nomorUsaha.text = (p1+1).toString()
         p0.namaUsaha.text = listVektor[p1].usaha.nama_usaha
         p0.modalUsaha.text = ("Modal : Rp${listVektor[p1].usaha.modal}")
+
+        //p0.tomboHapusUsaha.setOnClickListener { onItemClickListener.onClickItem(listVektor[p1].usaha)}
         p0.itemView.setOnClickListener { onItemClickListener.onClickItem(listVektor[p1].usaha) }
+
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        val nomorUsaha : TextView= itemView.findViewById(R.id.nomorUsaha)
         val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsaha)
-        //        val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
+        //val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
         val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsaha)
     }
 

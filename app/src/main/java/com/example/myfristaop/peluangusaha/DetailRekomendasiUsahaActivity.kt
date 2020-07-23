@@ -15,6 +15,7 @@ import com.example.myfristaop.peluangusaha.adapter.Tempat
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
 import com.example.myfristaop.peluangusaha.model.UsahaTersimpan
+import com.example.myfristaop.peluangusaha.model.UsahaTersimpanResponse
 import com.example.myfristaop.peluangusaha.preferences.UserPreferences
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapsInitializer
@@ -30,6 +31,7 @@ import kotlinx.android.synthetic.main.dialog_map_layout.view.*
 import kotlinx.android.synthetic.main.fragment_usaha.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -55,6 +57,10 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
     lateinit var retrofit: Retrofit
     lateinit var peluangUsahaApi: PeluangUsahaApi
     var saveState = 0
+
+    val usaha = intent.getParcelableExtra<UsahaResponse>(EXTRA_REKOMENDASI_USAHA)
+    var usahaTersimpan : List<UsahaTersimpanResponse>? = emptyList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_rekomendasi_usaha)
@@ -68,7 +74,6 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
         userPreferences = UserPreferences(this, prefFileName)
 
 
-        val usaha = intent.getParcelableExtra<UsahaResponse>(EXTRA_REKOMENDASI_USAHA)
         txtNamaDetailRekomendasiUsaha.text = "Usaha ${usaha.nama_usaha}"
         txtModalDetailRekomendasiUsaha.text = "Modal Rp.${usaha.modal}"
         txtDeskripsiDetailRekomendasiUsaha.text = usaha.deskripsi_usaha
@@ -88,6 +93,7 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
             ambilDataPesaing(pos, radius, usaha.nama_usaha)
             ambilDataTarget(pos, radius, usaha.target_pasar)
         }
+        cekUsahaTersimpan()
 
         btnTampilkanTargetRekomendasiUsahaDalamPeta.setOnClickListener {
             tampilkanTempatDalamMap("Peta Daftar Target Pasar", dataTargetPasar)
@@ -102,10 +108,37 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
                 simpanUsaha(usaha.id_usaha, userPreferences.USER_ID, idWilayah, latitude.toString(), longitude.toString())
             }
         }
-        cekUsahaTersimpan()
+
     }
     fun cekUsahaTersimpan() {
+        ambilUsahaTersimpan()
+        for (i in 0 until usahaTersimpan!!.size){
+            if(usahaTersimpan!![i].id_usaha==usaha.id_usaha){
+                saveState=1
+                break
+            }
+        }
+        if(saveState==1){ fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_delete_white_24dp) }
+        else{ fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_save_white_24dp) }
 
+    }
+    fun ambilUsahaTersimpan() {
+        doAsync {
+            val token = userPreferences.token
+            var call : Call<List<UsahaTersimpanResponse>> =  peluangUsahaApi.ambilUsahaTersimpan(token)
+            call.enqueue(object : Callback<List<UsahaTersimpanResponse>> {
+                override fun onResponse(call: Call<List<UsahaTersimpanResponse>>, response: Response<List<UsahaTersimpanResponse>>) {
+                    if(response.isSuccessful) {
+                        usahaTersimpan =  response.body()
+
+                    }
+                }
+
+                override fun onFailure(call: Call<List<UsahaTersimpanResponse>>, t: Throwable) {
+                    Log.d("Semua usaha -----------", t.toString())
+                }
+            })
+        }
     }
     fun simpanUsaha(id_usaha: String, id_pengguna: String, id_wilayah: String, latitude: String, longitude: String) {
     fabHapusDetailRekomendasiUsaha.isEnabled = false

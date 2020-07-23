@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
 import com.example.myfristaop.peluangusaha.adapter.Tempat
+import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
+import com.example.myfristaop.peluangusaha.model.UsahaResponse
+import com.example.myfristaop.peluangusaha.model.Wilayah
+import com.example.myfristaop.peluangusaha.preferences.UserPreferences
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.internal.t
 import com.loopj.android.http.AsyncHttpResponseHandler
@@ -14,14 +18,20 @@ import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import org.jetbrains.anko.doAsync
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.text.DecimalFormat
 import java.util.*
 
 
 class Ambil :MainActivity(){
+
     suspend fun Data(pos: LatLng, radius: Int, kataKunci: String,req : Int) {
 
         withContext(Dispatchers.IO) {
@@ -53,7 +63,6 @@ class Ambil :MainActivity(){
                                         lokasiUsaha.longitude = pos.longitude
 
                                         jarakSebelumnya = lokasiUsaha.distanceTo(lokasiTarget).toInt()
-                                        println("jarak sebelumnya : $jarakSebelumnya  XX jarak tersekat : $jarakTerdekat")
                                         if(jarakSebelumnya <= 1000) {
                                             jumlah+=1
                                            if(jarakSebelumnya<jarakTerdekat)
@@ -83,6 +92,8 @@ class Ambil :MainActivity(){
             }.await()
         }
     }
+
+
 }
 
 
