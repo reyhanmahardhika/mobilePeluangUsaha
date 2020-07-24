@@ -1,5 +1,7 @@
 package com.example.myfristaop.peluangusaha.adapter
 
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +33,7 @@ class RekomendasiUsahaAdapter (private val listVektor: List<VektorV>): RecyclerV
         p0.nomorUsaha.text = (p1+1).toString()
         p0.namaUsaha.text = listVektor[p1].usaha.nama_usaha
         p0.modalUsaha.text = ("Modal : Rp${listVektor[p1].usaha.modal}")
-
+//        p0.modalUsaha.background= listVektor[p1].usaha.gambar
         //p0.tomboHapusUsaha.setOnClickListener { onItemClickListener.onClickItem(listVektor[p1].usaha)}
         p0.itemView.setOnClickListener { onItemClickListener.onClickItem(listVektor[p1].usaha) }
 
@@ -42,6 +44,7 @@ class RekomendasiUsahaAdapter (private val listVektor: List<VektorV>): RecyclerV
         val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsaha)
         //val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
         val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsaha)
+        val gambarUsaha : ImageView= itemView.findViewById(R.id.imgUsaha)
     }
 
     interface OnItemClickListener {
