@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.myfristaop.peluangusaha.R
 import com.example.myfristaop.peluangusaha.model.UsahaResponse
 import com.example.myfristaop.peluangusaha.model.VektorV
@@ -29,12 +31,12 @@ class RekomendasiUsahaAdapter (private val listVektor: List<VektorV>): RecyclerV
     }
 
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-        ////        Glide.with(holder.itemView.context).load(listPlace[position].photo).apply(RequestOptions().override(350, 550)).into(holder.destinationPhoto)
+        Glide.with(p0.itemView.context).load(listVektor[p1].usaha.gambar).apply(RequestOptions().centerCrop()).into(p0.gambarUsaha)
+
         p0.nomorUsaha.text = (p1+1).toString()
         p0.namaUsaha.text = listVektor[p1].usaha.nama_usaha
         p0.modalUsaha.text = ("Modal : Rp${listVektor[p1].usaha.modal}")
-//        p0.modalUsaha.background= listVektor[p1].usaha.gambar
-        //p0.tomboHapusUsaha.setOnClickListener { onItemClickListener.onClickItem(listVektor[p1].usaha)}
+        p0.gambarUsaha.setOnClickListener { onItemClickListener.onClickItem(listVektor[p1].usaha)}
         p0.itemView.setOnClickListener { onItemClickListener.onClickItem(listVektor[p1].usaha) }
 
     }
@@ -42,7 +44,7 @@ class RekomendasiUsahaAdapter (private val listVektor: List<VektorV>): RecyclerV
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val nomorUsaha : TextView= itemView.findViewById(R.id.nomorUsaha)
         val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsaha)
-        //val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
+
         val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsaha)
         val gambarUsaha : ImageView= itemView.findViewById(R.id.imgUsaha)
     }

@@ -15,6 +15,7 @@
         android:padding="16dp"
         android:orientation="vertical">
         <ImageView
+            android:id="@+id/gambarDetailUsahaTersimpan"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="@color/bgLight"
@@ -180,6 +181,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_delete_black_24dp"/>
+        android:src="@drawable/ic_delete_white_24dp"/>
 
 </RelativeLayout>

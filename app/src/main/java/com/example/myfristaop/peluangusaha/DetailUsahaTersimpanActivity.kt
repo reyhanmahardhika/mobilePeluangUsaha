@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.myfristaop.peluangusaha.adapter.TargetDanPesaingAdapter
 import com.example.myfristaop.peluangusaha.adapter.Tempat
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
@@ -62,6 +64,7 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
         txtModalDetailUsahaTersimpan.text = "Modal Rp.${usaha.modal}"
         txtDeskripsiDetailUsahaTersimpan.text = usaha.deskripsi_usaha
         txtBahanBakuDetailUsahaTersimpan.text = usaha.bahan_baku
+        Glide.with(this).load(usaha.gambar).apply(RequestOptions().centerCrop()).into(gambarDetailUsahaTersimpan)
 
         fabHapusDetailUsahaTersimpan.setOnClickListener {
             val alertDialog = AlertDialog.Builder(this)

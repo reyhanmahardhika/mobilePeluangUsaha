@@ -9,7 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableResource
+import com.bumptech.glide.request.RequestOptions
 import com.example.myfristaop.peluangusaha.adapter.TargetDanPesaingAdapter
 import com.example.myfristaop.peluangusaha.adapter.Tempat
 import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
@@ -27,6 +29,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler
 import com.loopj.android.http.SyncHttpClient
 import cz.msebera.android.httpclient.Header
 import kotlinx.android.synthetic.main.activity_detail_rekomendasi_usaha.*
+import kotlinx.android.synthetic.main.activity_detail_rekomendasi_usaha.pbPesaingDetailUsaha
+import kotlinx.android.synthetic.main.activity_detail_usaha_tersimpan.*
 import kotlinx.android.synthetic.main.dialog_map_layout.view.*
 import kotlinx.android.synthetic.main.fragment_usaha.*
 import kotlinx.coroutines.*
@@ -58,13 +62,13 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
     lateinit var peluangUsahaApi: PeluangUsahaApi
     var saveState = 0
 
-    val usaha = intent.getParcelableExtra<UsahaResponse>(EXTRA_REKOMENDASI_USAHA)
-    var usahaTersimpan : List<UsahaTersimpanResponse>? = emptyList()
 
+    var usahaTersimpan : List<UsahaTersimpanResponse>? = emptyList()
+    lateinit var usaha: UsahaResponse
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_rekomendasi_usaha)
-
+        usaha = intent.getParcelableExtra<UsahaResponse>(EXTRA_REKOMENDASI_USAHA)
         retrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -78,6 +82,7 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
         txtModalDetailRekomendasiUsaha.text = "Modal Rp.${usaha.modal}"
         txtDeskripsiDetailRekomendasiUsaha.text = usaha.deskripsi_usaha
         txtBahanBakuDetailRekomendasiUsaha.text = usaha.bahan_baku
+        Glide.with(this).load(usaha.gambar).apply(RequestOptions().centerCrop()).into(gambarDetailRekomendasiUsaha)
 
         val latitude = intent.getDoubleExtra("LATITUDE", 0.0)
         val longitude = intent.getDoubleExtra("LONGITUDE", 0.0)

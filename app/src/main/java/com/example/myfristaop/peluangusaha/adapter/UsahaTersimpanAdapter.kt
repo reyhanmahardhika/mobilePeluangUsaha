@@ -4,7 +4,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.myfristaop.peluangusaha.R
 import com.example.myfristaop.peluangusaha.model.UsahaTersimpanResponse
 
@@ -26,7 +29,7 @@ class UsahaTersimpanAdapter(private val listUsaha : ArrayList<UsahaTersimpanResp
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        Glide.with(holder.itemView.context).load(listPlace[position].photo).apply(RequestOptions().override(350, 550)).into(holder.destinationPhoto)
+        Glide.with(holder.itemView.context).load(listUsaha[position].gambar).apply(RequestOptions().centerCrop()).into(holder.imgUsaha)
         holder.nomorUsaha.text = (position+1).toString()
         holder.namaUsaha.text = listUsaha[position].nama_usaha
         holder.modalUsaha.text = ("Modal : Rp${listUsaha[position].modal}")
@@ -36,7 +39,7 @@ class UsahaTersimpanAdapter(private val listUsaha : ArrayList<UsahaTersimpanResp
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nomorUsaha : TextView= itemView.findViewById(R.id.nomorUsaha)
         val namaUsaha: TextView = itemView.findViewById(R.id.txtNamaUsaha)
-//        val tomboHapusUsaha : ImageView = itemView.findViewById(R.id.imgHapusItemUsahaTersimpan)
+        val imgUsaha : ImageView = itemView.findViewById(R.id.imgUsaha)
         val modalUsaha : TextView = itemView.findViewById(R.id.txtModalUsaha)
     }
 

@@ -80,7 +80,6 @@ class RekomendasiUsaha : AppCompatActivity(){
         intent.putExtra("LONGITUDE", longitude)
         intent.putExtra("ID_WILAYAH", wilayah)
         startActivity(intent)
-        Toast.makeText(this@RekomendasiUsaha, vektorV.nama_usaha, Toast.LENGTH_SHORT).show()
 
 //        imgHapusItemUsahaTersimpan.setOnClickListener{
   //          hapusUsahaTersimpan(vektorV.id_usaha, userPreferences.USER_ID,wilayah!!, latitude.toString(), longitude.toString())
