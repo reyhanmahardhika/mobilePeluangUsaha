@@ -36,7 +36,6 @@ class RekomendasiUsaha : AppCompatActivity(){
   var saveState = 0
 
   var usahaTersimpan : List<UsahaTersimpanResponse>? = emptyList()
-  var cloneListVektorV : List<VektorV> = emptyList()
 
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,9 +54,7 @@ class RekomendasiUsaha : AppCompatActivity(){
     wilayah = intent.getStringExtra("ID_WILAYAH")
 
     val listVektorV = intent.getParcelableArrayListExtra<VektorV>("VEKTOR_V").sortedByDescending { it.nilaiVektor }
-    cloneListVektorV = listVektorV
 
-    cekUsahaTersimpan()
     if(listVektorV.size >= 10){
       tampilkanRekomendasi(listVektorV.slice(0..9))
     }
@@ -74,7 +71,7 @@ class RekomendasiUsaha : AppCompatActivity(){
     rvRekomendasiUsaha.adapter = adapter
     adapter.setOnClickListener(object : RekomendasiUsahaAdapter.OnItemClickListener {
       override fun onClickItem(vektorV: UsahaResponse) {
-        var intent = Intent(this@RekomendasiUsaha, DetailRekomendasiUsahaActivity::class.java)
+        val intent = Intent(this@RekomendasiUsaha, DetailRekomendasiUsahaActivity::class.java)
         intent.putExtra(EXTRA_REKOMENDASI_USAHA, vektorV)
         intent.putExtra("LATITUDE", latitude)
         intent.putExtra("LONGITUDE", longitude)
@@ -86,57 +83,6 @@ class RekomendasiUsaha : AppCompatActivity(){
     //    }
         }
       })
-  }
-  fun cekUsahaTersimpan() {
-    ambilUsahaTersimpan()
-    for (i in 0 until 10){
-      for(j in 0 until usahaTersimpan!!.size) {
-        if (usahaTersimpan!![j].id_usaha == cloneListVektorV[i].idUsaha) {
-          saveState = 1
-          break
-        }
-      }
-    }
-//    if(saveState==1){ imgHapusItemUsahaTersimpan.setImageDrawable(resources.getDrawable(R.drawable.ic_delete_black_24dp))  }
-//    else{ imgHapusItemUsahaTersimpan.setImageDrawable(resources.getDrawable(R.drawable.ic_bookmark)) }
-
-  }
-
-  fun ambilUsahaTersimpan() {
-    doAsync {
-      val token = userPreferences.token
-      var call : Call<List<UsahaTersimpanResponse>> =  peluangUsahaApi.ambilUsahaTersimpan(token)
-      call.enqueue(object : Callback<List<UsahaTersimpanResponse>> {
-        override fun onResponse(call: Call<List<UsahaTersimpanResponse>>, response: Response<List<UsahaTersimpanResponse>>) {
-          usahaTersimpan =  response.body()
-
-        }
-        override fun onFailure(call: Call<List<UsahaTersimpanResponse>>, t: Throwable) {
-          Log.d("Semua usaha -----------", t.toString())
-        }
-      })
-    }
-  }
-
-  private fun hapusUsahaTersimpan(id_usaha: String, id_pengguna: String, id_wilayah: String, latitude: String, longitude: String) {
-    doAsync {
-      val token = userPreferences.token
-      val usahaTersimpan = UsahaTersimpan("",id_usaha, id_pengguna, id_wilayah, latitude, longitude)
-      var call  =  peluangUsahaApi.hapusUsahaTersimpanByUser(token, usahaTersimpan)
-      call.enqueue(object: Callback<Void> {
-        override fun onFailure(call: Call<Void>, t: Throwable) {
-          Toast.makeText(this@RekomendasiUsaha, "Gagal menghapus, coba lagi nanti.", Toast.LENGTH_SHORT).show()
-        }
-
-        override fun onResponse(call: Call<Void>, response: Response<Void>) {
-          if(response.code() == 200) {
-            Toast.makeText(this@RekomendasiUsaha, "Berhasil menghapus, ${response.code()}.", Toast.LENGTH_SHORT).show()
-            saveState = 0
-
-          }
-        }
-      })
-    }
   }
 }
 

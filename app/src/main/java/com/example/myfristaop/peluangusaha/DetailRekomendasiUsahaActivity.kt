@@ -61,14 +61,15 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
     lateinit var retrofit: Retrofit
     lateinit var peluangUsahaApi: PeluangUsahaApi
     var saveState = 0
-
-
     var usahaTersimpan : List<UsahaTersimpanResponse>? = emptyList()
     lateinit var usaha: UsahaResponse
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_rekomendasi_usaha)
+
         usaha = intent.getParcelableExtra<UsahaResponse>(EXTRA_REKOMENDASI_USAHA)
+
+
         retrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -108,7 +109,13 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
         }
         fabHapusDetailRekomendasiUsaha.setOnClickListener {
             if(saveState == 1) {
-                hapusUsahaTersimpan(usaha.id_usaha, userPreferences.USER_ID, idWilayah, latitude.toString(), longitude.toString())
+                val alertDialog = AlertDialog.Builder(this)
+
+                alertDialog.setMessage("Usaha ini sudah ada pada daftar usaha tersimpan, Anda yakin ingin menghapus?")
+                alertDialog.setCancelable(true)
+                alertDialog.setPositiveButton("Ya") { dialog, id -> hapusUsahaTersimpan(usaha.id_usaha, userPreferences.USER_ID, idWilayah, latitude.toString(), longitude.toString())}
+                alertDialog.setNegativeButton("Tidak") { dialog, id -> dialog.cancel()}
+                alertDialog.show()
             } else {
                 simpanUsaha(usaha.id_usaha, userPreferences.USER_ID, idWilayah, latitude.toString(), longitude.toString())
             }
@@ -117,15 +124,6 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
     }
     fun cekUsahaTersimpan() {
         ambilUsahaTersimpan()
-        for (i in 0 until usahaTersimpan!!.size){
-            if(usahaTersimpan!![i].id_usaha==usaha.id_usaha){
-                saveState=1
-                break
-            }
-        }
-        if(saveState==1){ fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_delete_white_24dp) }
-        else{ fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_save_white_24dp) }
-
     }
     fun ambilUsahaTersimpan() {
         doAsync {
@@ -133,10 +131,15 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
             var call : Call<List<UsahaTersimpanResponse>> =  peluangUsahaApi.ambilUsahaTersimpan(token)
             call.enqueue(object : Callback<List<UsahaTersimpanResponse>> {
                 override fun onResponse(call: Call<List<UsahaTersimpanResponse>>, response: Response<List<UsahaTersimpanResponse>>) {
-                    if(response.isSuccessful) {
-                        usahaTersimpan =  response.body()
-
+                    usahaTersimpan =  response.body()
+                    for (i in 0 until usahaTersimpan!!.size){
+                        if(usahaTersimpan!![i].id_usaha==usaha.id_usaha){
+                            saveState=1
+                            break
+                        }
                     }
+                    if(saveState==1){ fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_delete_white_24dp) }
+                    else{ fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_save_white_24dp) }
                 }
 
                 override fun onFailure(call: Call<List<UsahaTersimpanResponse>>, t: Throwable) {

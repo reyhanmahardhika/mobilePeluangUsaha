@@ -88,14 +88,4 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_edit_profile"
-        android:layout_width="250dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="50dp"
-        android:text="EDIT"
-        android:textSize="40sp"
-        android:background="@color/quantum_lightblue"
-        android:textColor="#FFFFFF"/>
 </LinearLayout>

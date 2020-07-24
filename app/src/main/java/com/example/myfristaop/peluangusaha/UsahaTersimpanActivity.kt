@@ -30,7 +30,6 @@ class UsahaTersimpanActivity : AppCompatActivity() {
     lateinit var retrofit: Retrofit
     lateinit var peluangUsahaApi: PeluangUsahaApi
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_usaha_tersimpan)
