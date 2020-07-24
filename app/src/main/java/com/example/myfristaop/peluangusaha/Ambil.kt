@@ -38,7 +38,7 @@ class Ambil :MainActivity(){
             async {
                 var jumlah = 0
                 val client = SyncHttpClient()
-                val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=$radius&name=$kataKunci&key=${BuildConfig.MAP_KEY}"
+                val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=$radius&name=$kataKunci&key=AIzaSyCIzmKLdFHcim2FlP7e4FmVl-L4i7UlSNc"
                 val charset = Charsets.UTF_8
                 val handler = object : AsyncHttpResponseHandler() {
                     @SuppressLint("LongLogTag")

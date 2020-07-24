@@ -23,7 +23,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val EXTRA_REKOMENDASI_USAHA ="EXTRA_REKOMENDASI_USAHA"
+const val  EXTRA_REKOMENDASI_USAHA ="EXTRA_REKOMENDASI_USAHA"
 class RekomendasiUsaha : AppCompatActivity(){
 
   private lateinit var userPreferences: UserPreferences

@@ -66,22 +66,6 @@ class UsahaTersimpanActivity : AppCompatActivity() {
             })
         }
     }
-    private fun hapusUsahaTersimpan(id: String) {
-        doAsync {
-            val token = userPreferences.token
-            var call  =  peluangUsahaApi.hapusUsahaTersimpan(token, id)
-            call.enqueue(object: Callback<Void> {
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Log.e("hapus usaha", "failed: " + t)
-                }
-
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    Toast.makeText(this@UsahaTersimpanActivity,  "Usaha telah terhapus.", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-            })
-        }
-    }
 
     private fun showRvUsahTersimpan (list: List<UsahaTersimpanResponse>) {
         rvUsahaTersimpan.layoutManager = LinearLayoutManager(this)

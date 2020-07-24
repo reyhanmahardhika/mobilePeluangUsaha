@@ -53,7 +53,11 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail_usaha_tersimpan)
         userPreferences = UserPreferences(this, prefFileName)
 
-        val usaha = intent.getParcelableExtra<UsahaTersimpanResponse>(EXTRA_USAHA_TERSIMPAN)
+        var usaha = intent.getParcelableExtra<UsahaTersimpanResponse>(EXTRA_USAHA_TERSIMPAN)
+        if(usaha == null){
+            usaha = intent.getParcelableExtra<UsahaTersimpanResponse>(EXTRA_REKOMENDASI_USAHA)
+        }
+
         txtNamaDetailUsahaTersimpan.text = "Usaha ${usaha.nama_usaha}"
         txtModalDetailUsahaTersimpan.text = "Modal Rp.${usaha.modal}"
         txtDeskripsiDetailUsahaTersimpan.text = usaha.deskripsi_usaha
@@ -173,7 +177,7 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
 
                 println("debug: launching job1: ${Thread.currentThread().name}")
                 var client = SyncHttpClient()
-                var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${name}&key=${BuildConfig.MAP_KEY}"
+                var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${name}&key=AIzaSyCIzmKLdFHcim2FlP7e4FmVl-L4i7UlSNc"
                 val charset = Charsets.UTF_8
                 var listPesaing: ArrayList<Tempat> = arrayListOf()
                 var handler = object : AsyncHttpResponseHandler() {
@@ -231,7 +235,7 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
             async {
                 for (t in target) {
                     var client = SyncHttpClient()
-                    var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${t.trim()}&key=${BuildConfig.MAP_KEY}"
+                    var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${t.trim()}&key=AIzaSyCIzmKLdFHcim2FlP7e4FmVl-L4i7UlSNc"
                     val charset = Charsets.UTF_8
                     var handler = object : AsyncHttpResponseHandler() {
                         override fun onSuccess(statusCode: Int, headers: Array<out Header>?, responseBody: ByteArray?) {

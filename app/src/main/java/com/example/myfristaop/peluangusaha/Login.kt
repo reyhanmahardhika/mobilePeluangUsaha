@@ -39,9 +39,7 @@ class Login : AppCompatActivity(){
                 Toast.makeText(applicationContext, "Anda Belum Login", Toast.LENGTH_LONG).show()
             }
             else {
-                this@Login.finish()
                 startActivity(Intent(this@Login, MainActivity::class.java))}
-
         }
         // Sebelum lanjut cek apakah user sudah login
         checkLogin()
@@ -77,7 +75,8 @@ class Login : AppCompatActivity(){
                         userPreferences.email = userResponse?.email ?: ""
                         userPreferences.token = userResponse?.token ?: ""
                         this@Login.finish()
-                    } else{
+                        startActivity(Intent(this@Login, MainActivity::class.java))
+                } else{
                         txtAlertLogin.text = "Email atau password yang anda masukkan tidak benar"
                         txtAlertLogin.visibility = View.VISIBLE
                     }

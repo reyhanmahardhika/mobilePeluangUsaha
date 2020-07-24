@@ -116,6 +116,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
+
         userPreferences = UserPreferences(this, prefFileName)
 
         retrofit = Retrofit.Builder()
@@ -222,9 +223,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 if(txt_modal.text.toString()!=""){
                     if(kota.toLowerCase() == "kota medan" || kota.toLowerCase() == "medan city"){
                         txt_modal.clearFocus()
-                        layoutMainToolbar.isClickable=false
-                        layoutMainbawah.isClickable=false
-                        layoutMap.isClickable=false
                         CariRekomendasiUsaha()
                     }
                     else{showToast("Lokasi yang ditetapkan harus berada di kawasan Kota Medan!") }
@@ -443,10 +441,11 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
         ambilKepadatanPenduduk(kelurahan)
 
         txt_prosesAnalisis.visibility= View.VISIBLE
+        txt_waktu.visibility=View.VISIBLE
         pbPerhitunganAlgoritma.visibility = View.VISIBLE
-        layoutMainToolbar.isEnabled=false
-        layoutMainbawah.isEnabled=false
-        layoutMap.isEnabled=false
+        layoutMainToolbar.isClickable=false
+        layoutMainbawah.isClickable=false
+        layoutMap.isClickable=false
 
         val ambil :Ambil = Ambil()
         val modal : Int = txt_modal.text.toString().toInt()
@@ -584,14 +583,17 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 //                V[i][0]="U${i+1}"
 //                V[i][1]=usaha!![i].id_usaha
 //                V[i][2]=(S[i][2]!!.toDouble()/totalNilaiS).toString()
-                val nilaiVektor = (S[i][2]!!.toDouble()/totalNilaiS).toString()
-                val idu = usaha[i].id_usaha
-                val vektor = VektorV("U${i+1}",idu, nilaiVektor, usaha[i])
-                vektorV.add(vektor)
+                val nilaiVektor = (S[i][2]!!.toDouble()/totalNilaiS)
+                if(nilaiVektor!=0.0){
+                    val idu = usaha[i].id_usaha
+                    val vektor = VektorV("U${i+1}",idu, nilaiVektor.toString(), usaha[i])
+                    vektorV.add(vektor)
+                    }
 //                println("V${i+1} = ${V[i][2]}")
             }
             CoroutineScope(Dispatchers.Main).launch {
                 txt_prosesAnalisis.visibility= View.INVISIBLE
+                txt_waktu.visibility=View.INVISIBLE
                 pbPerhitunganAlgoritma.visibility = View.INVISIBLE
                 layoutMainToolbar.isClickable=true
                 layoutMainbawah.isClickable=true
