@@ -1,5 +1,6 @@
 package com.example.myfristaop.peluangusaha
 
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -18,6 +19,7 @@ import com.example.myfristaop.peluangusaha.model.UsahaTersimpanResponse
 import com.example.myfristaop.peluangusaha.preferences.UserPreferences
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import com.google.android.libraries.places.api.internal.impl.net.pablo.PlaceResult
 import com.loopj.android.http.AsyncHttpResponseHandler
 import com.loopj.android.http.SyncHttpClient
 import cz.msebera.android.httpclient.Header
@@ -79,6 +81,9 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
         lokasiUsaha = Location("")
         lokasiUsaha.latitude = pos.latitude
         lokasiUsaha.longitude = pos.longitude
+        val geocoder = Geocoder(this)
+        val list = geocoder.getFromLocation(pos.latitude, pos.longitude, 1)
+        txtAlamatDetailUsahaTersimpan.text = " ${list[0].getAddressLine(0)}"
 
         CoroutineScope(IO).launch {
             ambilDataPesaing(pos, radius, usaha.nama_usaha)
@@ -180,7 +185,7 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
 
                 println("debug: launching job1: ${Thread.currentThread().name}")
                 var client = SyncHttpClient()
-                var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${name}&key=AIzaSyCIzmKLdFHcim2FlP7e4FmVl-L4i7UlSNc"
+                var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${name}&key=AIzaSyD1YfX3-GnTvEk55Nhu2v3YAOOXd6gFZbQ"
                 val charset = Charsets.UTF_8
                 var listPesaing: ArrayList<Tempat> = arrayListOf()
                 var handler = object : AsyncHttpResponseHandler() {
@@ -199,7 +204,8 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
                                         lokasiPesaing.latitude = posObj.getDouble("lat")
                                         lokasiPesaing.longitude = posObj.getDouble(("lng"))
 
-                                        val jarak = lokasiUsaha.distanceTo(lokasiPesaing)
+//                                        val jarak = lokasiUsaha.distanceTo(lokasiPesaing)
+                                        val jarak = getDistance(lokasiPesaing, lokasiUsaha)
                                         Log.w("nama tempat", namaTempat)
                                         Log.w("jarak", "$jarak")
                                         val df = DecimalFormat("#.##")
@@ -238,7 +244,7 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
             async {
                 for (t in target) {
                     var client = SyncHttpClient()
-                    var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${t.trim()}&key=AIzaSyCIzmKLdFHcim2FlP7e4FmVl-L4i7UlSNc"
+                    var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.latitude},${pos.longitude}&radius=${radius}&name=${t.trim()}&key=AIzaSyD1YfX3-GnTvEk55Nhu2v3YAOOXd6gFZbQ"
                     val charset = Charsets.UTF_8
                     var handler = object : AsyncHttpResponseHandler() {
                         override fun onSuccess(statusCode: Int, headers: Array<out Header>?, responseBody: ByteArray?) {
@@ -258,7 +264,8 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
                                             lokasiTarget.longitude = posObj.getDouble(("lng"))
 
 
-                                            val jarak = lokasiUsaha.distanceTo(lokasiTarget)
+//                                            val jarak = lokasiUsaha.distanceTo(lokasiTarget)
+                                            val jarak = getDistance(lokasiTarget, lokasiUsaha)
                                             Log.w("nama tempat", namaTempat)
                                             Log.w("jarak", "${Math.round(jarak)}")
                                             val df = DecimalFormat("#.##")
@@ -288,4 +295,18 @@ class DetailUsahaTersimpanActivity : AppCompatActivity() {
         }
     }
 
+    fun rad(x: Double): Double {
+        return x * Math.PI /180
+    }
+    private fun getDistance(p1: Location, p2: Location): Double {
+        var R = 6378137; // Earth’s mean radius in meter
+        var dLat = rad(p2.latitude - p1.latitude)
+        var dLong = rad(p2.longitude - p1.longitude)
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(rad(p1.latitude)) * Math.cos(rad(p2.latitude)) *
+                Math.sin(dLong / 2) * Math.sin(dLong / 2)
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        var d = R * c;
+        return d
+    }
 }

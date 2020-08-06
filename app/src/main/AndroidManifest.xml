@@ -20,13 +20,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppThemeWithActionbar">
-        <activity android:name=".DetailRekomendasiUsahaActivity"></activity>
+        <activity
+            android:name=".Login"
+            android:theme="@style/AppTheme"
+            android:logo="@drawable/ic_peluang_usaha">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".DetailRekomendasiUsahaActivity"
+            android:label="Detail Usaha"
+            android:parentActivityName=".RekomendasiUsaha"/>
         <activity
             android:name=".DetailUsahaTersimpanActivity"
             android:label="Detail Usaha Tersimpan"
             android:parentActivityName=".UsahaTersimpanActivity"
-            android:theme="@style/AppThemeWithActionbar" />
-
+            />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -37,27 +47,18 @@
             android:label="SPK Peluang Usaha"
             android:theme="@style/SplashTheme">
         </activity>
-        <activity
-            android:name=".Login"
-            android:theme="@style/AppTheme"
-            android:logo="@drawable/ic_peluang_usaha">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+
         <activity android:name=".RegisterActivity" />
         <activity
             android:name=".UsahaTersimpanActivity"
             android:label="Usaha Tersimpan"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppThemeWithActionbar" />
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ProfilActivity"
             android:label="Akun"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppThemeWithActionbar" />
-        <activity android:name=".RekomendasiUsaha" android:theme="@style/AppThemeWithActionbar" />
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".RekomendasiUsaha"
+            android:label="Daftar Rekomendasi Usaha"/>
         <activity
             android:name=".Ambil"
             android:label="Ambil Data"

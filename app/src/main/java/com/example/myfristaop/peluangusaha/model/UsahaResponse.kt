@@ -13,5 +13,5 @@ data class UsahaResponse(
         var deskripsi_usaha: String,
         var bahan_baku: String,
         var target_pasar: String,
-        var kepadatan_penduduk: String
+        var kepadatan_penduduk: Int
 ): Parcelable

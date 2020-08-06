@@ -46,43 +46,37 @@
     <android.support.v7.widget.CardView
         android:id="@+id/layoutMainbawah"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:background="@drawable/shadow">
 
-        <LinearLayout
+        <RelativeLayout
+            android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="55dp">
-
-            <android.support.v7.widget.AppCompatTextView
-                android:layout_width="70dp"
-                android:layout_height="45dp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="Modal : Rp "
-                android:textSize="15sp" />
-
-            <android.support.v7.widget.AppCompatEditText
+            android:layout_height="wrap_content">
+            
+            <EditText
                 android:id="@+id/txt_modal"
-                android:layout_width="170dp"
-                android:layout_height="45dp"
-                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
                 android:hint="Modal yang Anda miliki (Rp)"
+                android:layout_toStartOf="@id/btn_cari"
+                android:layout_marginEnd="5dp"
                 android:inputType="number"
                 android:textSize="16sp" />
 
-            <android.support.v7.widget.AppCompatButton
+            <Button
                 android:id="@+id/btn_cari"
-                android:layout_width="80dp"
-                android:layout_height="45dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="2dp"
-                android:background="@drawable/rounded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_search_white_24dp"
+                android:backgroundTint="@color/colorAccent"
                 android:text="Cari"
-                android:textColor="#fff"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:layout_alignParentRight="true"
+                android:textColor="#fff"/>
+        </RelativeLayout>
     </android.support.v7.widget.CardView>
     <ProgressBar
         android:id="@+id/pbPerhitunganAlgoritma"

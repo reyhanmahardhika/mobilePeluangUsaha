@@ -55,7 +55,6 @@ dependencies {
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
 
     // Asynchronus
-//    implementation 'co.metalab.asyncawait:asyncawait:1.0.0'
     implementation "com.loopj.android:android-async-http:1.4.9"
 
     // Coroutines
@@ -66,6 +65,6 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
     //Glide
-    implementation 'com.github.bumptech.glide:glide:4.0.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
+    implementation 'com.github.bumptech.glide:glide:4.5.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
 }

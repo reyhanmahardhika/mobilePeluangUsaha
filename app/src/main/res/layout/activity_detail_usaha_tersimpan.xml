@@ -47,6 +47,17 @@
             android:maxLines="1"
             android:layout_marginBottom="10dp"
             android:text="Jenis Usaha: Kuliner"/>
+        <TextView
+            android:id="@+id/txtAlamatDetailUsahaTersimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@color/bgLight"
+            android:drawableStart="@drawable/ic_location_on_black_24dp"
+            android:layout_marginBottom="5dp"
+            android:textSize="7pt"
+            android:gravity="center_vertical"
+            />
 
         <TextView
             android:layout_width="match_parent"

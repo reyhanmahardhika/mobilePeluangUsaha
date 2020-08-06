@@ -2,32 +2,17 @@ package com.example.myfristaop.peluangusaha
 
 import android.annotation.SuppressLint
 import android.location.Location
-import android.util.Log
-import com.example.myfristaop.peluangusaha.adapter.Tempat
-import com.example.myfristaop.peluangusaha.api.PeluangUsahaApi
-import com.example.myfristaop.peluangusaha.model.UsahaResponse
-import com.example.myfristaop.peluangusaha.model.Wilayah
-import com.example.myfristaop.peluangusaha.preferences.UserPreferences
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.internal.t
 import com.loopj.android.http.AsyncHttpResponseHandler
 import com.loopj.android.http.SyncHttpClient
 import cz.msebera.android.httpclient.Header
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.doAsync
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import java.text.DecimalFormat
-import java.util.*
+
 
 
 class Ambil :MainActivity(){
@@ -58,11 +43,12 @@ class Ambil :MainActivity(){
                                         lokasiTarget.latitude = posObj.getDouble("lat")
                                         lokasiTarget.longitude = posObj.getDouble(("lng"))
 
-                                        val lokasiUsaha : Location = Location("")
+                                        val lokasiUsaha = Location("")
                                         lokasiUsaha.latitude = pos.latitude
                                         lokasiUsaha.longitude = pos.longitude
 
-                                        jarakSebelumnya = lokasiUsaha.distanceTo(lokasiTarget).toInt()
+//                                        jarakSebelumnya = lokasiUsaha.distanceTo(lokasiTarget).toInt()
+                                        jarakSebelumnya = getDistance(lokasiUsaha, lokasiTarget).toInt()
                                         if(jarakSebelumnya <= 1000) {
                                             jumlah+=1
                                            if(jarakSebelumnya<jarakTerdekat)
@@ -91,6 +77,21 @@ class Ambil :MainActivity(){
 
             }.await()
         }
+    }
+
+    fun rad(x: Double): Double {
+        return x * Math.PI /180
+    }
+    private fun getDistance(p1: Location, p2: Location): Double {
+        var R = 6378137; // Earth’s mean radius in meter
+        var dLat = rad(p2.latitude - p1.latitude)
+        var dLong = rad(p2.longitude - p1.longitude)
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(rad(p1.latitude)) * Math.cos(rad(p2.latitude)) *
+                Math.sin(dLong / 2) * Math.sin(dLong / 2)
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        var d = R * c;
+        return d
     }
 
 

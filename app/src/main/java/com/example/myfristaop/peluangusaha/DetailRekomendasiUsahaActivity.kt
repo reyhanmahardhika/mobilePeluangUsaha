@@ -161,7 +161,7 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
 
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if(response.code() == 200) {
-                        Toast.makeText(this@DetailRekomendasiUsahaActivity, "Berhasil menyimpan, ${response.code()}.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@DetailRekomendasiUsahaActivity, "Berhasil menyimpan.", Toast.LENGTH_SHORT).show()
                         saveState = 1
                         fabHapusDetailRekomendasiUsaha.isEnabled = true
                         fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_delete_white_24dp)
@@ -185,7 +185,7 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
 
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if(response.code() == 200) {
-                        Toast.makeText(this@DetailRekomendasiUsahaActivity, "Berhasil menghapus, ${response.code()}.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@DetailRekomendasiUsahaActivity, "Berhasil menghapus.", Toast.LENGTH_SHORT).show()
                         saveState = 0
                         fabHapusDetailRekomendasiUsaha.isEnabled = true
                         fabHapusDetailRekomendasiUsaha.setImageResource(R.drawable.ic_save_white_24dp)
@@ -279,7 +279,8 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
                                         lokasiPesaing.latitude = posObj.getDouble("lat")
                                         lokasiPesaing.longitude = posObj.getDouble(("lng"))
 
-                                        val jarak = lokasiUsaha.distanceTo(lokasiPesaing)
+//                                        val jarak = lokasiUsaha.distanceTo(lokasiPesaing)
+                                        val jarak = getDistance(lokasiPesaing, lokasiUsaha)
                                         Log.w("nama tempat", namaTempat)
                                         Log.w("jarak", "$jarak")
                                         val df = DecimalFormat("#.##")
@@ -338,7 +339,8 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
                                             lokasiTarget.longitude = posObj.getDouble(("lng"))
 
 
-                                            val jarak = lokasiUsaha.distanceTo(lokasiTarget)
+//                                            val jarak = lokasiUsaha.distanceTo(lokasiTarget)
+                                            val jarak = getDistance(lokasiTarget, lokasiUsaha)
                                             Log.w("nama tempat", namaTempat)
                                             Log.w("jarak", "${Math.round(jarak)}")
                                             val df = DecimalFormat("#.##")
@@ -366,5 +368,20 @@ class DetailRekomendasiUsahaActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    fun rad(x: Double): Double {
+        return x * Math.PI /180
+    }
+    private fun getDistance(p1: Location, p2: Location): Double {
+        var R = 6378137; // Earth’s mean radius in meter
+        var dLat = rad(p2.latitude - p1.latitude)
+        var dLong = rad(p2.longitude - p1.longitude)
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(rad(p1.latitude)) * Math.cos(rad(p2.latitude)) *
+                Math.sin(dLong / 2) * Math.sin(dLong / 2)
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        var d = R * c;
+        return d
     }
 }

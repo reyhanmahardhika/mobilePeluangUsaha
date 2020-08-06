@@ -36,7 +36,6 @@ import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks.await
 import com.google.android.libraries.places.compat.Place
 import com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment
 import com.google.android.libraries.places.compat.ui.PlaceSelectionListener
@@ -45,14 +44,12 @@ import kotlinx.android.synthetic.main.activity_navigation.*
 import kotlinx.android.synthetic.main.app_bar_navigation.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.android.awaitFrame
 import org.jetbrains.anko.doAsync
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.text.DecimalFormat
 
 
 open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -64,6 +61,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
     var kelurahan = ""
     var kota = ""
+    var alamat =""
     private var position: LatLng = LatLng(0.0, 0.0)
     lateinit var user : FusedLocationProviderClient
 
@@ -79,7 +77,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     var kpadat : Double = 0.0
     var cpadat : Double = 0.0
     var padat : Double = 0.0
-    var spadat : Double = 0.0
+    private var spadat : Double = 0.0
 
     var tingkatKepadatanLokasi : String = "tidak padat"
 
@@ -184,7 +182,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
     //dijalankan ketika map sudah berhasil di tampilkan
     @SuppressLint("NewApi")
     override fun onMapReady(googleMap: GoogleMap) {
-        Toast.makeText(applicationContext, "Klik pada peta untuk menentukan lokasi usaha Anda!", Toast.LENGTH_LONG).show()
         mMap = googleMap
         val medan = LatLng(3.597031, 98.678513)
 
@@ -255,7 +252,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             marker.setIcon(icon)
             marker.showInfoWindow()
             marker.isDraggable = false
-            val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(1000.0).strokeWidth(2f))
+//            val circle: Circle = mMap.addCircle(CircleOptions().center(latLng).radius(1000.0).strokeWidth(2f))
 
             val zoom = mMap.cameraPosition.zoom.toDouble()
             if (zoom < 14.7) {
@@ -270,7 +267,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
     //digunakan untuk mendapatkan alamat dari lokasi usaha
     private fun getAddress(latLng: LatLng, txt_alamat: PlaceAutocompleteFragment): String {
-        var alamat =""
+
         try{
             val geocoder = Geocoder(this)
             val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
@@ -337,6 +334,7 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
 
         }
     }
+
     // Hapus akun dan logout
     fun logout() {
         userPreferences.clearValue()
@@ -388,8 +386,6 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 })
             }
     }
-
-
 
     fun hitungKepadatan(x : Double){
 
@@ -447,11 +443,11 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
         layoutMainbawah.isClickable=false
         layoutMap.isClickable=false
 
-        val ambil :Ambil = Ambil()
+        val ambil = Ambil()
         val modal : Int = txt_modal.text.toString().toInt()
 
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(IO).launch {
 
             for(i in 0..((cari_targetPasar.size)-1)){ //mencari data target pasar
                 ambil.Data(position,1000,cari_targetPasar[i],1) }
@@ -561,16 +557,16 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             var totalNilaiS:Double=0.0
 
             for(i in 0 until usaha.size){
-                var S_temp :Double =0.0
+                var S_temp :Double = 0.0
                 S[i][0]="U"+(i+1).toString()
-                S[i][1]=usaha[i].nama_usaha.toString()
-                if(preferensi[i][4]!= "0" ){
-                S_temp =
-                        (Math.pow((preferensi[i][2]!!.toDouble()),W1))*
-                        (Math.pow((preferensi[i][3]!!.toDouble()),W2))*
-                        (Math.pow((preferensi[i][4]!!.toDouble()),-W3))*
-                        (Math.pow((preferensi[i][5]!!.toDouble()),W4))*
-                        (Math.pow((preferensi[i][6]!!.toDouble()),-W5))
+                S[i][1]=usaha[i].nama_usaha
+                if(preferensi[i][4] != "0" ){
+                    S_temp =
+                            (Math.pow((preferensi[i][2]!!.toDouble()),W1))*
+                            (Math.pow((preferensi[i][3]!!.toDouble()),W2))*
+                            (Math.pow((preferensi[i][4]!!.toDouble()),-W3))*
+                            (Math.pow((preferensi[i][5]!!.toDouble()),W4))*
+                            (Math.pow((preferensi[i][6]!!.toDouble()),-W5))
                 }
                 else{S_temp = 0.0}
                 S[i][2]= (S_temp).toString()
@@ -579,16 +575,21 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
             }
 //            val V : Array<Array<String?>> = Array(pesaingUsaha.size) { arrayOfNulls(3)}
             val vektorV = arrayListOf<VektorV>()
-            for(i in 0 until usaha.size){
+            for(i in 0 until usaha.size) {
 //                V[i][0]="U${i+1}"
 //                V[i][1]=usaha!![i].id_usaha
 //                V[i][2]=(S[i][2]!!.toDouble()/totalNilaiS).toString()
-                val nilaiVektor = (S[i][2]!!.toDouble()/totalNilaiS)
-                if(nilaiVektor!=0.0){
+                var nilaiVektor = 0.0
+                if (totalNilaiS != 0.0) {
+                    nilaiVektor = (S[i][2]!!.toDouble() / totalNilaiS)
+                }
+                if (nilaiVektor != 0.0) {
                     val idu = usaha[i].id_usaha
-                    val vektor = VektorV("U${i+1}",idu, nilaiVektor.toString(), usaha[i])
+                    val vektor = VektorV("U${i + 1}", idu, nilaiVektor, usaha[i])
                     vektorV.add(vektor)
-                    }
+                    Log.w("------nilai Vektor", vektor.nilaiVektor.toString())
+                }
+
 //                println("V${i+1} = ${V[i][2]}")
             }
             CoroutineScope(Dispatchers.Main).launch {
@@ -605,6 +606,10 @@ open class MainActivity() : AppCompatActivity(), NavigationView.OnNavigationItem
                 intent.putExtra("LATITUDE", position.latitude)
                 intent.putExtra("LONGITUDE", position.longitude)
                 intent.putExtra("ID_WILAYAH", wilayah?.id_wilayah)
+                intent.putExtra("ALAMAT", alamat)
+                var modal = txt_modal.text.toString().toInt()
+                intent.putExtra("MODAL", modal)
+
                 startActivity(intent)
 
             }

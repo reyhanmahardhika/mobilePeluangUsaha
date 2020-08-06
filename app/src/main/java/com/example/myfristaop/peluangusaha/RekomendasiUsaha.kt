@@ -26,63 +26,63 @@ import retrofit2.converter.gson.GsonConverterFactory
 const val  EXTRA_REKOMENDASI_USAHA ="EXTRA_REKOMENDASI_USAHA"
 class RekomendasiUsaha : AppCompatActivity(){
 
-  private lateinit var userPreferences: UserPreferences
-  private val prefFileName = "DATAUSER"
-  private var latitude: Double? = null
-  private var longitude: Double? = null
-  private var wilayah: String? = null
-  lateinit var peluangUsahaApi: PeluangUsahaApi
-  lateinit var retrofit: Retrofit
-  var saveState = 0
+    private lateinit var userPreferences: UserPreferences
+    private val prefFileName = "DATAUSER"
+    private var latitude: Double? = null
+    private var longitude: Double? = null
+    private var wilayah: String? = null
+    private var alamat: String? = null
+    private var modal: Int? = null
+    lateinit var peluangUsahaApi: PeluangUsahaApi
+    lateinit var retrofit: Retrofit
 
-  var usahaTersimpan : List<UsahaTersimpanResponse>? = emptyList()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_rekomendasi_usaha)
+
+        retrofit = Retrofit.Builder()
+                .baseUrl(BuildConfig.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+        peluangUsahaApi = retrofit.create(PeluangUsahaApi::class.java)
+
+        userPreferences = UserPreferences(this, prefFileName)
+        latitude = intent.getDoubleExtra("LATITUDE", 0.0)
+        longitude = intent.getDoubleExtra("LONGITUDE", 0.0)
+        wilayah = intent.getStringExtra("ID_WILAYAH")
+        alamat = intent.getStringExtra("ALAMAT")
+        modal = intent.getIntExtra("MODAL", 0)
 
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_rekomendasi_usaha)
-
-    retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    peluangUsahaApi = retrofit.create(PeluangUsahaApi::class.java)
-
-    userPreferences = UserPreferences(this, prefFileName)
-    latitude = intent.getDoubleExtra("LATITUDE", 0.0)
-    longitude = intent.getDoubleExtra("LONGITUDE", 0.0)
-    wilayah = intent.getStringExtra("ID_WILAYAH")
-
-    val listVektorV = intent.getParcelableArrayListExtra<VektorV>("VEKTOR_V").sortedByDescending { it.nilaiVektor }
-
-    if(listVektorV.size >= 10){
-      tampilkanRekomendasi(listVektorV.slice(0..9))
-    }
-    else{
-      tampilkanRekomendasi(listVektorV)
-    }
-
-  }
-
-  private fun tampilkanRekomendasi(listVektorV: List<VektorV>) {
-    var adapter = RekomendasiUsahaAdapter(listVektorV)
-    rvRekomendasiUsaha.layoutManager = LinearLayoutManager(this)
-    rvRekomendasiUsaha.setHasFixedSize(true)
-    rvRekomendasiUsaha.adapter = adapter
-    adapter.setOnClickListener(object : RekomendasiUsahaAdapter.OnItemClickListener {
-      override fun onClickItem(vektorV: UsahaResponse) {
-        val intent = Intent(this@RekomendasiUsaha, DetailRekomendasiUsahaActivity::class.java)
-        intent.putExtra(EXTRA_REKOMENDASI_USAHA, vektorV)
-        intent.putExtra("LATITUDE", latitude)
-        intent.putExtra("LONGITUDE", longitude)
-        intent.putExtra("ID_WILAYAH", wilayah)
-        startActivity(intent)
-
-//        imgHapusItemUsahaTersimpan.setOnClickListener{
-  //          hapusUsahaTersimpan(vektorV.id_usaha, userPreferences.USER_ID,wilayah!!, latitude.toString(), longitude.toString())
-    //    }
+        val listVektorV = intent.getParcelableArrayListExtra<VektorV>("VEKTOR_V").sortedByDescending { it.nilaiVektor }
+        if(listVektorV.size < 1) {
+            txtLabelRekomendasiUsaha.text = "Tidak ditemukan usaha yang tepat di lokasi anda"
+            labelDaftarRekomendasiUsaha.visibility = View.GONE
+        } else {
+            txtLabelRekomendasiUsaha.text = "Ditemukan ${listVektorV.slice(0..9).size} usaha yang tepat di lokasi anda."
         }
-      })
-  }
+        tampilkanRekomendasi(listVektorV.slice(0..9))
+
+        txtAlamatRekomendasiUsaha.text = alamat
+        txtModalRekomendasiUsaha.text = modal.toString()
+
+    }
+
+    private fun tampilkanRekomendasi(listVektorV: List<VektorV>) {
+        var adapter = RekomendasiUsahaAdapter(listVektorV)
+        rvRekomendasiUsaha.layoutManager = LinearLayoutManager(this)
+        rvRekomendasiUsaha.setHasFixedSize(true)
+        rvRekomendasiUsaha.adapter = adapter
+        adapter.setOnClickListener(object : RekomendasiUsahaAdapter.OnItemClickListener {
+            override fun onClickItem(vektorV: UsahaResponse) {
+                val intent = Intent(this@RekomendasiUsaha, DetailRekomendasiUsahaActivity::class.java)
+                intent.putExtra(EXTRA_REKOMENDASI_USAHA, vektorV)
+                intent.putExtra("LATITUDE", latitude)
+                intent.putExtra("LONGITUDE", longitude)
+                intent.putExtra("ID_WILAYAH", wilayah)
+                startActivity(intent)
+            }
+        })
+    }
 }
 
